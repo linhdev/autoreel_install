@@ -1,0 +1,173 @@
+# ShortGPT — bộ cài cho máy khách hàng
+
+Thư mục này là tất cả những gì cần mang sang máy khác. Không cần mã nguồn, không
+cần Git, không cần Python: app nằm trong image trên ghcr, `install.sh` lo phần
+còn lại.
+
+```
+install.sh          cài đặt — Windows (Git Bash) và macOS
+docker-compose.yml  ba container: app, MoneyPrinterTurbo (api + web ui)
+open-chrome.bat     mở cửa sổ Chrome để đăng nhập Shopee  (Windows)
+open-chrome.sh      như trên                              (macOS)
+start.bat / start.sh    khởi động app + mở giao diện
+stop.bat  / stop.sh     tắt app (dữ liệu trong ./data giữ nguyên)
+.env.example        bản mẫu cấu hình (install.sh chép thành .env)
+check-ghcr-push.sh  CHỈ ở máy phát triển: kiểm tra token có quyền đẩy image
+publish-images.sh   CHỈ ở máy phát triển: build + đẩy image lên ghcr
+data/               toàn bộ dữ liệu: video, database, log, model (tự sinh ra)
+```
+
+## Cần gì trước khi bắt đầu
+
+- **Windows 10/11** hoặc **macOS** (Intel hay Apple Silicon đều được — xem mục
+  *Hai loại chip* bên dưới).
+- Còn khoảng **15 GB** trống (image + model).
+- Kết nối mạng (lần đầu tải image và model: ZeroTTS ~900 MB, Whisper ~140 MB).
+- Một điện thoại Android **nếu** dùng chức năng đăng bài lên Shopee Video.
+
+## Cài đặt
+
+**Windows:** cài **Git for Windows** (<https://git-scm.com/download/win>), rồi
+nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh`.
+
+**macOS:** mở **Terminal**, `cd` vào thư mục này rồi `./install.sh`. Không cần
+cài gì trước — script dùng Homebrew nếu có, và tải thẳng từ Google nếu không.
+
+> Nếu Terminal báo `permission denied`: thư mục vừa được chép từ nơi khác tới
+> (zip, USB) nên mất quyền chạy. Gõ `chmod +x *.sh` rồi chạy lại.
+
+Script kiểm tra từng thứ, cài cái còn thiếu, rồi in bảng tổng kết: `✓` xong,
+`!` cần để ý, `x` chưa xong. Chạy lại được nhiều lần. Muốn xem máy đang thiếu gì
+mà **không** cài gì: `./install.sh check`.
+
+Nó **không** tự đăng nhập Shopee và **không** ghép điện thoại — hai việc đó cần
+người, xem dưới.
+
+## Hai loại chip
+
+Image được đẩy cho **cả `linux/amd64` và `linux/arm64`**, nên `docker pull` tự
+lấy đúng bản cho máy:
+
+| Máy | Bản được kéo | Ghi chú |
+|---|---|---|
+| Windows (Intel/AMD) | amd64 | chạy thẳng |
+| Mac Intel | amd64 | chạy thẳng |
+| Mac Apple Silicon (M1/M2/M3/M4) | arm64 | chạy thẳng, không giả lập |
+
+`install.sh` in ra dòng `Image: linux/arm64 - đúng kiến trúc của máy này` (hoặc
+cảnh báo nếu vì lý do gì đó phải chạy giả lập — khi đó whisper và bước render
+chậm hơn nhiều lần).
+
+## Sau khi cài: ba bước
+
+### 1. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
+
+Mở **`open-chrome.bat`** (Windows: nhấp đôi) hoặc **`./open-chrome.sh`** (macOS),
+đăng nhập Shopee trong cửa sổ hiện ra, rồi **để cửa sổ đó mở** trong lúc dùng
+app.
+
+Cửa sổ này dùng hồ sơ Chrome riêng (`.chrome-shopee` trong thư mục này) — trình
+duyệt bạn vẫn dùng hằng ngày không bị đụng tới và không phải đóng. Phiên đăng
+nhập nằm trong hồ sơ đó, nên lần sau chỉ cần mở lại là xong.
+
+### 2. Nối điện thoại Android (chỉ khi đăng bài lên Shopee Video)
+
+Trên điện thoại: bật **USB debugging** trong Tuỳ chọn nhà phát triển, cắm cáp,
+và chấp nhận hộp thoại *"Cho phép gỡ lỗi USB"*.
+
+Kiểm tra (đường dẫn adb nằm trong thư mục này — `adb.exe` trên Windows, `adb`
+trên macOS):
+
+```bash
+./platform-tools/adb devices        # macOS
+./platform-tools/adb.exe devices    # Windows (Git Bash)
+```
+
+Android 11 trở lên nối được qua Wi-Fi, không cần cáp — trên điện thoại mở
+*Ghép thiết bị bằng mã*, rồi (đổi `adb` thành `adb.exe` nếu là Windows):
+
+```bash
+./platform-tools/adb pair 192.168.1.20:41234   # ip:cổng trong hộp thoại
+./platform-tools/adb connect 192.168.1.20:37123 # cổng này KHÁC cổng pair
+```
+
+Trên macOS, adb nói chuyện với điện thoại **qua máy này**; container nối tới nó
+qua `host.docker.internal:5037` — cùng cách Windows làm, nên không phải cấu hình
+gì thêm.
+
+### 3. Mở app
+
+<http://localhost:31415> — hoặc nhấp đôi **`start.bat`**.
+
+Máy nào đã có thứ khác chiếm cổng 31415 thì điền `SHORTGPT_PORT=31416` vào
+`.env` rồi `docker compose up -d` — `start.bat` và `install.sh` đọc đúng cổng
+đó.
+
+## Cập nhật
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Muốn ghim đúng một bản (để mọi máy khách hàng chạy giống nhau) thì điền vào
+`.env`:
+
+```
+SHORTGPT_IMAGE=ghcr.io/linhdev/shortgpt:2026-10-04
+MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-04
+```
+
+## Dữ liệu nằm ở đâu
+
+Tất cả trong `./data`, không có gì nằm trong container — cập nhật hay xoá
+container cũng không mất:
+
+| Thư mục | Nội dung |
+|---|---|
+| `data/videos` | Video đã dựng |
+| `data/database` | Database (kênh, lịch sử, asset) |
+| `data/app-logs`, `data/logs` | Log của app, và bằng chứng từng lượt đăng Shopee |
+| `data/cookies` | Cookie cho yt-dlp (youtube.txt / douyin.txt) |
+| `data/input` | Phim dài để cắt highlight (thả file vào đây) |
+| `data/models` | Model ZeroTTS, Whisper, bộ xoá logo |
+| `data/mpt-data` | Cấu hình và kết quả của MoneyPrinterTurbo |
+
+## Khi có trục trặc
+
+| Hiện tượng | Xem gì |
+|---|---|
+| App không mở được | `docker compose logs --tail 100 shortgpt` |
+| Nút Docker báo lỗi | Docker Desktop đã chạy chưa (biểu tượng dưới khay hệ thống) |
+| Màn Shopee báo bị chặn / không đọc được link | Cửa sổ `open-chrome.bat` đã mở và đã đăng nhập chưa |
+| Không thấy điện thoại | `./platform-tools/adb devices` (`adb.exe` trên Windows) — phải thấy trạng thái `device`, không phải `unauthorized` |
+| Đăng bài Shopee thất bại | `data/logs/shopee/<mã batch>/<tên video>/` — có `log.txt`, ảnh chụp màn hình, `ui.xml`, `result.json` |
+| Video tự động không chạy | `docker compose logs --tail 100 mpt-api` |
+| Chức năng cần key báo lỗi | Mở `.env`, điền `OPENAI_API_KEY` / `PEXELS_API_KEY`, rồi `docker compose up -d` |
+
+Chạy `./install.sh check` để có bảng tổng kết tình trạng hiện tại.
+
+## Dành cho máy phát triển
+
+`publish-images.sh` build hai image từ kho mã nguồn và đẩy lên ghcr **cho cả
+hai kiến trúc** (amd64 + arm64), thành một manifest list dưới cùng một tag:
+
+```bash
+./publish-images.sh 2026-10-04              # cả hai kiến trúc
+./publish-images.sh 2026-10-04 --amd64-only # chỉ amd64 (nhanh hơn nhiều)
+```
+
+Phần arm64 được build bằng QEMU ngay trên máy bạn, nên nó là phần chậm — hàng
+chục phút. `check-ghcr-push.sh` chạy trước để token thiếu quyền `write:packages`
+không tốn cả buổi build mới lộ ra.
+
+Máy khách hàng chỉ cần `docker compose pull`. Lần đẩy đầu tiên, package trên
+ghcr mặc định là **private** — vào GitHub → Packages → chọn package → *Package
+settings* → *Danger Zone* → **Change visibility → Public**, nếu không muốn mỗi
+máy khách phải `docker login`.
+
+Kiểm tra một tag đã có đủ hai kiến trúc chưa:
+
+```bash
+docker buildx imagetools inspect ghcr.io/linhdev/shortgpt:latest
+```

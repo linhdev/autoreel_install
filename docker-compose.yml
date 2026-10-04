@@ -1,0 +1,141 @@
+# ShortGPT — bản cài trên máy khách hàng.
+#
+# **Khác bản trong kho mã nguồn ở đúng một điểm, và đó là điểm quan trọng
+# nhất: file này không mount mã nguồn.** Mọi thứ đã nằm trong image kéo từ
+# ghcr về, nên máy này không cần - và không có - thư mục `shortGPT/` hay
+# `gui/` nào cả. Bản trong kho mount hai thư mục đó đè lên bản trong image để
+# sửa code chỉ cần restart; ở đây không có gì để đè.
+#
+# Dữ liệu thì ngược lại: video, database, log, cookie, model đều nằm trong
+# `./data/` ngay cạnh file này. Xoá container, cập nhật image, cài lại - không
+# mất gì, và người dùng mở được thư mục video bằng Explorer.
+#
+#   docker compose pull          # lấy image mới
+#   docker compose up -d         # chạy
+#   docker compose logs -f shortgpt
+#
+# `install.sh` trong cùng thư mục này làm hết những việc đó, kèm phần cài đặt
+# môi trường - hãy dùng nó thay vì gõ tay.
+
+name: shortgpt
+
+services:
+  shortgpt:
+    image: ${SHORTGPT_IMAGE:-ghcr.io/linhdev/shortgpt:latest}
+    container_name: shortgpt
+    # Để container nối được tới những thứ chạy trên Windows: adb server (cổng
+    # 5037) và cửa sổ Chrome đã đăng nhập Shopee (cổng 47831). Không có dòng
+    # này thì `host.docker.internal` không phân giải được, và lỗi hiện ra như
+    # một lỗi DNS chứ không như một dòng còn thiếu.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      # Cổng ngoài đổi được bằng SHORTGPT_PORT trong .env - máy nào đã có thứ
+      # khác chiếm 31415 thì đổi ở đây, không phải sửa file này. Bên trong
+      # container app vẫn nghe 31415.
+      - "${SHORTGPT_PORT:-31415}:31415"
+    # Docker Desktop trên Windows đôi lúc để resolver nội bộ (127.0.0.11) trả
+    # lời sai, làm app chết ngay lúc khởi động. Chỉ định thẳng DNS.
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      - TORCH_DISABLE_NATIVE_JIT=1
+      # Cửa sổ Chrome cho phiên Shopee. Container không mở được cửa sổ nào -
+      # trong đó không có màn hình - nên nó nối tới cửa sổ mà `open-chrome.bat`
+      # mở trên Windows. Đổi cổng ở đây thì phải đổi cả trong file .bat đó.
+      - SHOPEE_CDP_HOST=host.docker.internal
+      - SHOPEE_CDP_PORT=47831
+      # Key nằm trong .env cạnh file này, không nằm ở đây: file này được đem đi
+      # khắp nơi, còn .env thì không.
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - PEXELS_API_KEY=${PEXELS_API_KEY:-}
+      # Thư mục video *như Windows thấy nó*, để cột "Thư mục" của màn Thư viện
+      # hiện đường dẫn mở được bằng Explorer. install.sh điền dòng này vào .env
+      # một lần, bằng đường dẫn thật của máy này.
+      - SHORTGPT_VIDEOS_HOST_PATH=${SHORTGPT_VIDEOS_HOST_DIR:-./data/videos}
+      # Phim dài để cắt highlight: thả file vào ./data/input rồi mở màn
+      # "Cắt highlight". Mount thay vì upload vì phim là hàng GB.
+      - SHORTGPT_INPUT_DIR=/app/input
+      - SHORTGPT_COOKIES_DIR=/app/cookies
+      # MoneyPrinterTurbo chạy trong chính compose này, nên gọi nhau bằng tên
+      # service - xem hai service ở cuối file.
+      - SHORTGPT_MPT_URL=http://mpt-api:8080
+      # Cookie cho yt-dlp: chỉ cần với Douyin (bắt buộc) và khi YouTube chặn.
+      # Thả file vào ./data/cookies và đặt tên youtube.txt / douyin.txt.
+      - SHORTGPT_YT_COOKIES=${SHORTGPT_YT_COOKIES:-}
+      - SHORTGPT_TT_COOKIES=${SHORTGPT_TT_COOKIES:-}
+      - SHORTGPT_PROXY=${SHORTGPT_PROXY:-}
+    volumes:
+      - ./data/videos:/app/videos
+      - ./data/database:/app/.database
+      # Hai thư mục log khác nhau và cả hai đều cần: `.logs/` là log của app,
+      # `logs/` là bằng chứng của mỗi lượt đăng Shopee (log từng bước, ảnh
+      # chụp màn hình, cây accessibility) - thứ đầu tiên cần mở khi một bài
+      # đăng thất bại.
+      - ./data/app-logs:/app/.logs
+      - ./data/logs:/app/logs
+      - ./data/cookies:/app/cookies
+      - ./data/input:/app/input:ro
+      # Ảnh và video của thư viện asset, và các gói "tải tất cả". Thư mục này
+      # được install.sh chép sẵn từ trong image ra lần đầu (nhạc nền, logo,
+      # template) - mount một thư mục rỗng đè lên đó sẽ làm mất đúng những
+      # file ấy.
+      - ./data/public:/app/public
+      # Model: ZeroTTS (~900 MB, tải một lần), Whisper (139 MB) và bộ xoá logo.
+      # Để trong ./data/models chứ không để trong container: mỗi lần cập nhật
+      # image là một lần tải lại từ đầu nếu không.
+      - ./data/models/hf-cache:/root/.cache/huggingface
+      - ./data/models/whisper:/root/.cache/whisper
+      - ./data/models/videowipe:/root/.videowipe/weights
+      # MoneyPrinterTurbo để kết quả ở đây. App đọc file qua đường dẫn của
+      # *nó* (`/tasks/<id>/final-1.mp4`), nên phải thấy được thư mục đó - nếu
+      # không thì "làm video rồi đăng luôn" chết ở bước thứ hai với câu "không
+      # thấy file video" cho một video vừa render xong.
+      - ./data/mpt-data/storage:/app/mpt-storage:ro
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # MoneyPrinterTurbo: màn "Video tự động". Hai service, hai tiến trình của
+  # cùng một ứng dụng - bản thân nó phát hành như vậy, và gộp lại chỉ làm khó
+  # thấy sự khác nhau giữa hai danh sách task trong bộ nhớ của chúng.
+  # ---------------------------------------------------------------------------
+  mpt-api:
+    image: ${MPT_IMAGE:-ghcr.io/linhdev/moneyprinterturbo:latest}
+    container_name: moneyprinterturbo-api
+    ports:
+      - "127.0.0.1:8080:8080"
+    command: [ "python3", "main.py" ]
+    environment:
+      - MPT_CONFIG_FILE=/mpt-data/config.toml
+      # Một tư liệu tải lên được phép lớn tới đâu. Mặc định là 200 MB - một
+      # con số dành cho clip ngắn, trong khi app này đọc nguồn dài tuỳ ý. 2 GB
+      # đủ cho nguồn vài giờ.
+      - MPT_MAX_VIDEO_MATERIAL_BYTES=2147483648
+    volumes:
+      - ./data/mpt-data:/mpt-data
+      - ./data/mpt-data/storage:/MoneyPrinterTurbo/storage
+      - ./data/models/hf-cache:/root/.cache/huggingface
+    restart: unless-stopped
+
+  mpt-webui:
+    image: ${MPT_IMAGE:-ghcr.io/linhdev/moneyprinterturbo:latest}
+    container_name: moneyprinterturbo-webui
+    ports:
+      - "127.0.0.1:8501:8501"
+    environment:
+      - MPT_CONFIG_FILE=/mpt-data/config.toml
+      - MPT_MAX_VIDEO_MATERIAL_BYTES=2147483648
+    command: [ "streamlit", "run", "./webui/Main.py",
+               "--server.address=0.0.0.0", "--server.port=8501",
+               "--browser.serverAddress=127.0.0.1", "--server.enableCORS=True",
+               "--browser.gatherUsageStats=False",
+               "--client.toolbarMode=minimal",
+               "--logger.hideWelcomeMessage=True",
+               "--server.showEmailPrompt=False" ]
+    volumes:
+      - ./data/mpt-data:/mpt-data
+      - ./data/mpt-data/storage:/MoneyPrinterTurbo/storage
+      - ./data/models/hf-cache:/root/.cache/huggingface
+    restart: unless-stopped
