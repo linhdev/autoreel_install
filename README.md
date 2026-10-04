@@ -12,10 +12,11 @@ open-chrome.sh      như trên                              (macOS)
 start.bat / start.sh    khởi động app + mở giao diện
 stop.bat  / stop.sh     tắt app (dữ liệu trong ./data giữ nguyên)
 .env.example        bản mẫu cấu hình (install.sh chép thành .env)
-check-ghcr-push.sh  CHỈ ở máy phát triển: kiểm tra token có quyền đẩy image
-publish-images.sh   CHỈ ở máy phát triển: build + đẩy image lên ghcr
 data/               toàn bộ dữ liệu: video, database, log, model (tự sinh ra)
 ```
+
+Trong đây **không có** script đẩy image: việc đó chỉ có nghĩa trên máy phát
+triển, và hai script ấy nằm trong kho mã nguồn — xem mục cuối file.
 
 ## Cần gì trước khi bắt đầu
 
@@ -149,17 +150,25 @@ Chạy `./install.sh check` để có bảng tổng kết tình trạng hiện t
 
 ## Dành cho máy phát triển
 
-`publish-images.sh` build hai image từ kho mã nguồn và đẩy lên ghcr **cho cả
-hai kiến trúc** (amd64 + arm64), thành một manifest list dưới cùng một tag:
+**Đẩy image là việc của kho mã nguồn, không phải của thư mục này** — hai script
+đó nằm ở `tools/` trong kho (`tools/publish-images.sh` và
+`tools/check-ghcr-push.sh`), vì máy khách hàng không có việc gì với chúng và
+thư mục này cố ý không mang mã nguồn.
+
+`tools/publish-images.sh` build hai image từ cây mã nguồn và đẩy lên ghcr **cho
+cả hai kiến trúc** (amd64 + arm64), thành một manifest list dưới cùng một tag:
 
 ```bash
-./publish-images.sh 2026-10-04              # cả hai kiến trúc
-./publish-images.sh 2026-10-04 --amd64-only # chỉ amd64 (nhanh hơn nhiều)
+./tools/publish-images.sh 2026-10-04              # cả hai kiến trúc
+./tools/publish-images.sh 2026-10-04 --amd64-only # chỉ amd64 (nhanh hơn nhiều)
 ```
 
 Phần arm64 được build bằng QEMU ngay trên máy bạn, nên nó là phần chậm — hàng
-chục phút. `check-ghcr-push.sh` chạy trước để token thiếu quyền `write:packages`
-không tốn cả buổi build mới lộ ra.
+chục phút. `tools/check-ghcr-push.sh` chạy trước để token thiếu quyền
+`write:packages` không tốn cả buổi build mới lộ ra.
+
+Nhớ đẩy lại mỗi lần sửa mã nguồn: image chỉ mới bằng đúng lúc nó được build, và
+máy khách hàng chỉ thấy những gì đã đẩy lên.
 
 Máy khách hàng chỉ cần `docker compose pull`. Lần đẩy đầu tiên, package trên
 ghcr mặc định là **private** — vào GitHub → Packages → chọn package → *Package

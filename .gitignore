@@ -1,0 +1,14 @@
+# Cấu hình thật của từng máy. install.sh chép .env.example thành .env rồi điền
+# OPENAI_API_KEY / ELEVENLABS_API_KEY / PEXELS_API_KEY vào đó, cùng đường dẫn
+# thư mục video của chính máy ấy. Không bao giờ commit.
+.env
+
+# Toàn bộ dữ liệu chạy: video, database SQLite, log, cookie phiên Shopee và
+# model (ZeroTTS ~900 MB, Whisper ~140 MB). Hàng chục GB, và là dữ liệu của
+# riêng máy đó - không phải thứ để chia sẻ. Cả thư mục đều tự sinh ra khi chạy.
+data/
+
+# Máy để lại mấy thứ này khi chạy trong thư mục.
+.DS_Store
+Thumbs.db
+desktop.ini
