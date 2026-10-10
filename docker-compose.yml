@@ -51,6 +51,11 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
       - PEXELS_API_KEY=${PEXELS_API_KEY:-}
+      # Địa chỉ Facebook trả trình duyệt về sau khi đăng nhập. Có mặc định
+      # trong .env.example vì Meta chỉ cho một địa chỉ HTTPS khi app đã Live -
+      # xem HUONG-DAN-FACEBOOK.md. App ID/App Secret của khách thì dán trên màn
+      # Cấu hình, không nằm ở đây.
+      - FB_REDIRECT_URI=${FB_REDIRECT_URI:-}
       # Thư mục video *như Windows thấy nó*, để cột "Thư mục" của màn Thư viện
       # hiện đường dẫn mở được bằng Explorer. install.sh điền dòng này vào .env
       # một lần, bằng đường dẫn thật của máy này.

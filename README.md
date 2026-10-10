@@ -104,6 +104,21 @@ Máy nào đã có thứ khác chiếm cổng 31415 thì điền `SHORTGPT_PORT=
 `.env` rồi `docker compose up -d` — `start.bat` và `install.sh` đọc đúng cổng
 đó.
 
+### 4. Kết nối Facebook (chỉ khi đăng bài lên Page)
+
+Cần một app Meta của chính bạn và khoảng 10 phút. **Từng bước một, kèm ba lỗi
+hay gặp: [`HUONG-DAN-FACEBOOK.md`](HUONG-DAN-FACEBOOK.md)** — mở file đó bằng
+Notepad hoặc trình duyệt.
+
+Tóm tắt: tạo app Meta → thêm Facebook Login → bật ba quyền
+(`pages_show_list`, `pages_read_engagement`, `pages_manage_posts`) → khai
+`https://autoreelvn.com/facebook/callback/` vào *Valid OAuth Redirect URIs* và
+`autoreelvn.com` vào *App Domains* → dán App ID/App Secret vào màn **Cấu
+hình** của app → bấm **Connect Facebook** và làm theo hướng dẫn trên màn hình.
+
+Muốn bài đăng **công khai** (không chỉ mình bạn thấy) thì sau đó chuyển app
+Meta sang **Live** — cũng nằm trong file hướng dẫn.
+
 ## Cập nhật
 
 ```bash
