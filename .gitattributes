@@ -1,0 +1,12 @@
+# Shell scripts keep LF endings, whatever core.autocrlf says.
+#
+# Git for Windows defaults to autocrlf=true, which rewrites these to CRLF on
+# checkout. A shebang whose line ends in a carriage return is a script that
+# dies on its very first line - "bad interpreter: /usr/bin/env bash^M" -
+# before it can print anything useful. That is a bad way for `install.sh` to
+# meet somebody on a machine they are setting up, and this folder is handed
+# over as often on macOS as on Windows.
+#
+# The .bat files are the other way round on purpose and are left alone:
+# cmd.exe expects CRLF.
+*.sh  text eol=lf

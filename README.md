@@ -12,6 +12,7 @@ open-chrome.sh      như trên                              (macOS)
 start.bat / start.sh    khởi động app + mở giao diện
 stop.bat  / stop.sh     tắt app (dữ liệu trong ./data giữ nguyên)
 .env.example        bản mẫu cấu hình (install.sh chép thành .env)
+HUONG-DAN-FACEBOOK.md   nối Facebook từng bước (chỉ khi đăng bài lên Page)
 data/               toàn bộ dữ liệu: video, database, log, model (tự sinh ra)
 ```
 
@@ -59,7 +60,7 @@ lấy đúng bản cho máy:
 cảnh báo nếu vì lý do gì đó phải chạy giả lập — khi đó whisper và bước render
 chậm hơn nhiều lần).
 
-## Sau khi cài: ba bước
+## Sau khi cài: bốn bước
 
 ### 1. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
 
@@ -115,6 +116,12 @@ Tóm tắt: tạo app Meta → thêm Facebook Login → bật ba quyền
 `https://autoreelvn.com/facebook/callback/` vào *Valid OAuth Redirect URIs* và
 `autoreelvn.com` vào *App Domains* → dán App ID/App Secret vào màn **Cấu
 hình** của app → bấm **Connect Facebook** và làm theo hướng dẫn trên màn hình.
+
+**Không có tên miền riêng, hoặc luồng Connect bị Meta chặn?** Bỏ qua toàn bộ
+phần địa chỉ quay về ở trên: lấy token ở Graph API Explorer rồi dán vào ô
+*"Token để dán"* trên màn **Facebook** — xem mục *Cách khác: dán token* trong
+file hướng dẫn. Đường này không cần tên miền, không cần `FB_REDIRECT_URI`, và
+token Page lấy theo cách đó **không hết hạn** (khỏi phải nối lại sau 60 ngày).
 
 Muốn bài đăng **công khai** (không chỉ mình bạn thấy) thì sau đó chuyển app
 Meta sang **Live** — cũng nằm trong file hướng dẫn.

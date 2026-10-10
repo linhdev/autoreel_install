@@ -691,7 +691,7 @@ finish() {
 
     cat <<EOF
 
-${BOLD}Còn hai việc cần người làm:${OFF}
+${BOLD}Còn ba việc cần người làm - việc 3 chỉ khi đăng bài lên Facebook Page:${OFF}
 
   1. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
      - Mở $how_chrome trong thư mục này.
@@ -705,6 +705,12 @@ ${BOLD}Còn hai việc cần người làm:${OFF}
      - Android 11 trở lên nối được qua Wi-Fi (không cần cáp):
          ${ADB} pair <ip>:<cổng>     # lấy ip:cổng ở mục "Ghép bằng mã" trên máy
          ${ADB} connect <ip>:<cổng>  # cổng này khác cổng ở bước pair
+
+  3. Nối Facebook (chỉ khi đăng video lên Page)
+     - Mở ${BOLD}HUONG-DAN-FACEBOOK.md${OFF} trong thư mục này - từng bước một,
+       khoảng 10 phút, kèm ba lỗi hay gặp.
+     - Cần một app Meta của chính bạn. Không có tên miền riêng thì làm theo
+       mục "Cách khác: dán token" ở cuối file đó.
 
   Mở app:  ${BOLD}http://localhost:$(app_port)${OFF}   (hoặc $how_start)
 
