@@ -97,6 +97,35 @@ Bấm **Save Changes**.
 > ⚠️ Dán trong vòng **10 phút** kể từ lúc bấm Connect. Quá hạn thì bấm Connect
 > lần nữa lấy link mới (link cũ hết hiệu lực).
 
+## Cách khác: dán token — không cần tên miền, không cần dán địa chỉ
+
+Dùng khi máy bạn không có tên miền riêng, hoặc khi luồng Connect bị Meta chặn.
+Cũng làm một lần.
+
+1. Mở [Graph API Explorer](https://developers.facebook.com/tools/explorer) →
+   chọn app của bạn ở ô **Meta App**.
+2. Ở **Permissions**, tick đủ ba: `pages_show_list`,
+   `pages_read_engagement`, `pages_manage_posts`.
+3. Bấm **Generate Access Token** → đăng nhập → chọn Page → đồng ý. Ô token
+   hiện ra một chuỗi dài — **copy chuỗi đó**.
+4. Trong app: màn **Facebook** → mở mục *“Nếu đăng nhập không tự quay về”* →
+   dán vào ô **“Token để dán”** → bấm **Kết nối bằng token này**.
+
+App tự đổi token người dùng sang bản 60 ngày rồi đọc danh sách Page — không
+cần `Valid OAuth Redirect URIs`, không cần App Domains, không cần tên miền.
+
+**Muốn token không bao giờ hết hạn?** Sau bước 3:
+
+1. Dán token vào [Access Token Debugger](https://developers.facebook.com/tools/debug/accesstoken/)
+   → bấm **Extend Access Token** (được bản dài hạn ~60 ngày).
+2. Trong Explorer, đổi đường dẫn thành `me/accounts` rồi gửi — mỗi Page trong
+   kết quả có một `access_token` riêng. **Đó là token Page**, dán nó vào app.
+3. Kiểm lại bằng Debugger: dòng **Expires** phải hiện **Never**.
+
+Token Page không hết hạn nghĩa là kết nối **một lần rồi thôi** — không phải
+quay lại sau 60 ngày. Nó chỉ chết nếu bạn đổi mật khẩu Facebook hoặc thu hồi
+quyền của app.
+
 ## Muốn người ngoài nhìn thấy bài
 
 Mặc định app Meta ở **Development mode**: bài **vẫn lên thật**, nhưng **chỉ
@@ -120,6 +149,7 @@ chối, và không phải lỗi của app.
 | App báo *“Cái này không giống địa chỉ đăng nhập Facebook”* | Thứ dán vào không có `?code=…` — copy thiếu | Bước 5.4: copy **nguyên dòng địa chỉ** trên trang autoreelvn.com |
 | App báo *“Phiên uỷ quyền không khớp hoặc đã quá hạn”* | Quá 10 phút, hoặc dùng link của lần bấm trước | Bấm **Connect Facebook** lại rồi làm tiếp cho liền mạch |
 | *Token đã hết hạn* | Token sống khoảng 60 ngày | Bấm **Connect Facebook** lại (không mất gì) |
+| Đã Live mà Connect vẫn bị chặn vì tên miền | Redirect URI/App Domains chưa khớp | Dùng **đường dán token** ở trên — nó không cần tên miền |
 
 ## Nếu cần kiểm tra nhanh
 
