@@ -12,3 +12,7 @@ data/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Hồ sơ Chrome của phiên Shopee, do open-chrome.* tạo ra khi đăng nhập.
+# 22 MB, và là dữ liệu phiên của riêng máy đó - không phải thứ để chia sẻ.
+.chrome-shopee/

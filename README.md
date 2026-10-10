@@ -6,7 +6,7 @@ còn lại.
 
 ```
 install.sh          cài đặt — Windows (Git Bash) và macOS
-docker-compose.yml  ba container: app, MoneyPrinterTurbo (api + web ui)
+docker-compose.yml  ba container: app, AutoReel Engine (api + web ui)
 open-chrome.bat     mở cửa sổ Chrome để đăng nhập Shopee  (Windows)
 open-chrome.sh      như trên                              (macOS)
 start.bat / start.sh    khởi động app + mở giao diện
@@ -154,7 +154,7 @@ container cũng không mất:
 | `data/cookies` | Cookie cho yt-dlp (youtube.txt / douyin.txt) |
 | `data/input` | Phim dài để cắt highlight (thả file vào đây) |
 | `data/models` | Model ZeroTTS, Whisper, bộ xoá logo |
-| `data/mpt-data` | Cấu hình và kết quả của MoneyPrinterTurbo |
+| `data/mpt-data` | Cấu hình và kết quả của AutoReel Engine |
 
 ## Khi có trục trặc
 

@@ -64,7 +64,7 @@ services:
       # "Cắt highlight". Mount thay vì upload vì phim là hàng GB.
       - SHORTGPT_INPUT_DIR=/app/input
       - SHORTGPT_COOKIES_DIR=/app/cookies
-      # MoneyPrinterTurbo chạy trong chính compose này, nên gọi nhau bằng tên
+      # AutoReel Engine chạy trong chính compose này, nên gọi nhau bằng tên
       # service - xem hai service ở cuối file.
       - SHORTGPT_MPT_URL=http://mpt-api:8080
       # Cookie cho yt-dlp: chỉ cần với Douyin (bắt buộc) và khi YouTube chặn.
@@ -94,7 +94,7 @@ services:
       - ./data/models/hf-cache:/root/.cache/huggingface
       - ./data/models/whisper:/root/.cache/whisper
       - ./data/models/videowipe:/root/.videowipe/weights
-      # MoneyPrinterTurbo để kết quả ở đây. App đọc file qua đường dẫn của
+      # AutoReel Engine để kết quả ở đây. App đọc file qua đường dẫn của
       # *nó* (`/tasks/<id>/final-1.mp4`), nên phải thấy được thư mục đó - nếu
       # không thì "làm video rồi đăng luôn" chết ở bước thứ hai với câu "không
       # thấy file video" cho một video vừa render xong.
@@ -102,7 +102,7 @@ services:
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
-  # MoneyPrinterTurbo: màn "Video tự động". Hai service, hai tiến trình của
+  # AutoReel Engine: màn "Video tự động". Hai service, hai tiến trình của
   # cùng một ứng dụng - bản thân nó phát hành như vậy, và gộp lại chỉ làm khó
   # thấy sự khác nhau giữa hai danh sách task trong bộ nhớ của chúng.
   # ---------------------------------------------------------------------------
