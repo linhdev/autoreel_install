@@ -72,6 +72,21 @@ services:
       - SHORTGPT_YT_COOKIES=${SHORTGPT_YT_COOKIES:-}
       - SHORTGPT_TT_COOKIES=${SHORTGPT_TT_COOKIES:-}
       - SHORTGPT_PROXY=${SHORTGPT_PROXY:-}
+      # --- Bản quyền ---------------------------------------------------------
+      # Công tắc bắt buộc kích hoạt. Mặc định TẮT: một bản cài đã bán trước khi
+      # có hệ thống bản quyền không có mã nào, và bật cái này lên mà chưa gửi mã
+      # cho họ là dừng toàn bộ khách hàng cùng lúc, vào một ngày họ không đổi gì.
+      # Bật bằng cách đặt SHORTGPT_LICENSE_ENFORCE=1 trong .env.
+      - SHORTGPT_LICENSE_ENFORCE=${SHORTGPT_LICENSE_ENFORCE:-}
+      # Máy chủ bản quyền. Điền cho tường minh dù đã có mặc định trong code:
+      # đây là dòng người ta tìm khi cần trỏ sang máy chủ thử nghiệm.
+      - SHORTGPT_LICENSE_API=${SHORTGPT_LICENSE_API:-https://license.autoreelvn.com}
+      # Khoá công khai để xác minh mã. KHÔNG phải bí mật - nó được publish công
+      # khai ở /.well-known/autoreel-license-keys.json và đã được nhúng sẵn
+      # trong image. Để trống thì app vẫn chạy, nhưng chỉ khi có mạng: khoá tải
+      # từ máy chủ nằm trong RAM, nên restart lúc mất mạng là app từ chối chạy.
+      # Chỉ điền khi cần trỏ sang khoá khác (máy chủ thử nghiệm, đổi khoá).
+      - SHORTGPT_LICENSE_PUBLIC_KEY=${SHORTGPT_LICENSE_PUBLIC_KEY:-}
     volumes:
       - ./data/videos:/app/videos
       - ./data/database:/app/.database
