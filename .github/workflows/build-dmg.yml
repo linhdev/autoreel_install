@@ -54,7 +54,11 @@ jobs:
           rm -rf "$MOUNT"; mkdir -p "$MOUNT"
           hdiutil attach "$DMG" -nobrowse -readonly -mountpoint "$MOUNT"
           echo "Đã gắn vào: $MOUNT"
-          ls -la "$MOUNT/AutoReel" | head -20
+          # In CẢ gốc ổ đĩa lẫn thư mục trong nó. Nếu cấu trúc sai - ví dụ
+          # `-srcfolder` chép nội dung ra gốc thay vì chép cả thư mục - thì log
+          # cho thấy ngay cái gì đang nằm ở đâu, thay vì chỉ một dòng "thiếu file".
+          echo "--- gốc ổ đĩa ---"; ls -la "$MOUNT"
+          echo "--- trong AutoReel ---"; ls -la "$MOUNT/AutoReel" 2>&1 | head -20
 
           # Ba file bắt buộc, và bit chạy của chúng - thứ dễ mất nhất khi đóng gói.
           for f in "Cài đặt.command" "Mở AutoReel.command" install.sh start.sh docker-compose.yml; do

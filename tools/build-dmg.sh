@@ -34,7 +34,18 @@ if ! command -v hdiutil >/dev/null 2>&1; then
 fi
 
 OUT="$HERE/dist"
-STAGE="$OUT/AutoReel"
+# Hai tầng, và tầng thừa ra là cố ý.
+#
+# `hdiutil create -srcfolder X` chép **nội dung của X** ra gốc ổ đĩa, không chép
+# chính X. Nên đưa thẳng thư mục khách hàng vào đó thì khách mở .dmg ra sẽ thấy
+# install.sh, docker-compose.yml, ba file .command... nằm trần trụi ở gốc, và
+# không có thư mục "AutoReel" nào để kéo ra Desktop - trong khi README dạy đúng
+# là kéo thư mục đó.
+#
+# Nên: dựng `pkg/AutoReel/`, rồi đưa `pkg` cho hdiutil. Gốc ổ đĩa nhận được
+# đúng một thư mục tên AutoReel, và cái tên đó khớp với thứ README nói.
+PKG="$OUT/pkg"
+STAGE="$PKG/AutoReel"
 DMG="$OUT/AutoReel-$VERSION.dmg"
 
 # ------------------------------------------------------------ danh sách loại trừ
@@ -65,7 +76,7 @@ EXCLUDES=(
 )
 
 echo "==> Dọn đầu ra cũ"
-rm -rf "$STAGE" "$DMG"
+rm -rf "$PKG" "$DMG"
 mkdir -p "$STAGE"
 
 echo "==> Chép nội dung thư mục khách hàng"
@@ -104,12 +115,12 @@ echo "==> Tạo .dmg"
 # -volname là tên hiện ra trên Desktop khi khách mở file.
 hdiutil create \
     -volname "AutoReel" \
-    -srcfolder "$STAGE" \
+    -srcfolder "$PKG" \
     -ov \
     -format UDZO \
     "$DMG" >/dev/null
 
-rm -rf "$STAGE"
+rm -rf "$PKG"
 
 SIZE="$(du -h "$DMG" | cut -f1)"
 HASH="$(shasum -a 256 "$DMG" | cut -d' ' -f1)"
