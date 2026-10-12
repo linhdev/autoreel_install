@@ -691,14 +691,20 @@ finish() {
 
     cat <<EOF
 
-${BOLD}Còn ba việc cần người làm - việc 3 chỉ khi đăng bài lên Facebook Page:${OFF}
+${BOLD}Còn bốn việc cần người làm - việc 3 chỉ khi đăng bài lên Page, việc 4 chỉ khi có mã bản quyền:${OFF}
 
-  1. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
+  1. Kích hoạt bản quyền (nếu bạn đã có mã)
+     - Mở app, vào Cấu hình, kéo xuống cuối tới mục "Bản quyền".
+     - Dán mã dạng AR-XXXX-XXXX-XXXX-XXXX rồi bấm Kích hoạt.
+     - Từ lúc đó app sẽ bắt buộc bản quyền: hết hạn là app ngừng
+       làm việc cho tới khi gia hạn. Chưa có mã thì bỏ qua mục này.
+
+  2. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
      - Mở $how_chrome trong thư mục này.
      - Đăng nhập Shopee trong cửa sổ hiện ra, rồi ${BOLD}để cửa sổ đó mở${OFF}
        trong lúc dùng app.
 
-  2. Nối điện thoại Android (để đăng bài lên Shopee Video)
+  3. Nối điện thoại Android (để đăng bài lên Shopee Video)
      - Trên điện thoại: Bật "USB debugging" trong Tuỳ chọn nhà phát triển,
        cắm cáp, và chấp nhận hộp thoại "Cho phép gỡ lỗi USB".
      - Kiểm tra:  ${ADB} devices
@@ -706,7 +712,7 @@ ${BOLD}Còn ba việc cần người làm - việc 3 chỉ khi đăng bài lên 
          ${ADB} pair <ip>:<cổng>     # lấy ip:cổng ở mục "Ghép bằng mã" trên máy
          ${ADB} connect <ip>:<cổng>  # cổng này khác cổng ở bước pair
 
-  3. Nối Facebook (chỉ khi đăng video lên Page)
+  4. Nối Facebook (chỉ khi đăng video lên Page)
      - Mở ${BOLD}HUONG-DAN-FACEBOOK.md${OFF} trong thư mục này - từng bước một,
        khoảng 10 phút, kèm ba lỗi hay gặp.
      - Cần một app Meta của chính bạn. Không có tên miền riêng thì làm theo

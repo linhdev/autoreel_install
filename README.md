@@ -60,7 +60,7 @@ lấy đúng bản cho máy:
 cảnh báo nếu vì lý do gì đó phải chạy giả lập — khi đó whisper và bước render
 chậm hơn nhiều lần).
 
-## Sau khi cài: bốn bước
+## Sau khi cài: năm bước
 
 ### 1. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
 
@@ -105,7 +105,38 @@ Máy nào đã có thứ khác chiếm cổng 31415 thì điền `SHORTGPT_PORT=
 `.env` rồi `docker compose up -d` — `start.bat` và `install.sh` đọc đúng cổng
 đó.
 
-### 4. Kết nối Facebook (chỉ khi đăng bài lên Page)
+### 4. Nhập mã kích hoạt (bản quyền)
+
+Bạn được cấp một mã dạng `AR-XXXX-XXXX-XXXX-XXXX` khi mua phần mềm. Nhập nó một
+lần:
+
+1. Mở app → **Cấu hình** (mục cuối sidebar)
+2. Kéo xuống cuối màn hình, tới mục **Bản quyền**
+3. Dán mã vào ô **Mã kích hoạt** → bấm **Kích hoạt**
+
+Xong. Mã được lưu trong `./data/database`, nên cập nhật hay khởi động lại đều
+không phải nhập lại.
+
+**Mã này gắn với máy.** Cài lại Windows hay đổi máy thì cần mã mới — liên hệ nơi
+bán, họ gỡ máy cũ khỏi hệ thống rồi cấp lại.
+
+#### Sau khi kích hoạt, phần mềm tự bắt buộc bản quyền
+
+Đây là điều đáng biết trước: **từ lúc kích hoạt, app sẽ từ chối làm việc nếu
+bản quyền hết hạn hoặc bị thu hồi.** Trước khi kích hoạt thì không — nên nếu bạn
+chưa có mã, app vẫn chạy bình thường và bạn cứ dùng thử trước.
+
+Khi bản quyền sắp hết hạn, mục **Bản quyền** trong Cấu hình sẽ hiện cảnh báo.
+Gia hạn rồi bấm **Kiểm tra ngay** là xong, không cần cài lại gì.
+
+> Máy cần kết nối mạng ít nhất một lần mỗi vài ngày để app kiểm tra bản quyền.
+> Nếu mất mạng, app vẫn chạy tiếp trong **72 giờ**; quá đó thì cần có mạng lại.
+> Đây là lý do app không dùng được trên máy hoàn toàn không có internet.
+>
+> Thu hồi và tạm khoá **không** chờ 72 giờ đó — chúng có hiệu lực ngay ở lần
+> kiểm tra kế tiếp.
+
+### 5. Kết nối Facebook (chỉ khi đăng bài lên Page)
 
 Cần một app Meta của chính bạn và khoảng 10 phút. **Từng bước một, kèm ba lỗi
 hay gặp: [`HUONG-DAN-FACEBOOK.md`](HUONG-DAN-FACEBOOK.md)** — mở file đó bằng
