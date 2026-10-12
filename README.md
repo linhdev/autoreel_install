@@ -159,6 +159,15 @@ Meta sang **Live** — cũng nằm trong file hướng dẫn.
 
 ## Cập nhật
 
+**`start.bat` / `./start.sh` tự làm việc này.** Mỗi lần khởi động, nó kiểm tra
+một lượt xem có bản mới không — có thì tải về, không thì chạy tiếp. Bạn không
+cần làm gì.
+
+Mất mạng thì nó báo `! Không kiểm tra được bản mới` rồi **vẫn mở app** bằng bản
+đang có trên máy. Nên mất mạng không chặn bạn làm việc.
+
+Làm tay, khi muốn chắc chắn:
+
 ```bash
 docker compose pull
 docker compose up -d
@@ -168,9 +177,15 @@ Muốn ghim đúng một bản (để mọi máy khách hàng chạy giống nha
 `.env`:
 
 ```
-SHORTGPT_IMAGE=ghcr.io/linhdev/shortgpt:2026-10-04
-MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-04
+SHORTGPT_IMAGE=ghcr.io/linhdev/shortgpt:2026-10-12
+MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-12
 ```
+
+> **Vì sao `start` phải tự kiểm tra.** `docker compose up -d` một mình chỉ dùng
+> image đã nằm sẵn trên máy. Một bản cài đã tải image về sẽ giữ nguyên bản đó
+> **mãi mãi**, và bên bán đẩy bản mới lên cũng không tới được ai — không có gì
+> trên máy khách chủ động đi lấy. Kiểm tra ở mỗi lần khởi động là chỗ duy nhất
+> nó tự tới.
 
 ## Dữ liệu nằm ở đâu
 

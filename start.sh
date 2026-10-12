@@ -19,6 +19,21 @@ if [ -z "$port" ] && [ -f .env ]; then
 fi
 port="${port:-31415}"
 
+# Bản mới, nếu có. `docker compose up -d` một mình chỉ dùng image đã nằm sẵn
+# trên máy, nên một bản cài đã tải image về sẽ giữ nguyên bản đó **mãi mãi** —
+# bên bán đẩy bản mới lên cũng không tới được ai. Kiểm tra ở đây, mỗi lần khởi
+# động, là cách duy nhất nó tự tới.
+#
+# Nhưng không được để nó chặn: khách mất mạng vẫn phải mở được app bằng bản
+# đang có. Nên `pull` hỏng thì chỉ cảnh báo rồi đi tiếp, và nói rõ là đang
+# chạy bản cũ.
+echo "  Đang kiểm tra bản mới..."
+if docker compose pull --quiet 2>/dev/null; then
+    echo "  Đã có bản mới nhất."
+else
+    echo "  ! Không kiểm tra được bản mới (mất mạng?) - chạy bản đang có trên máy."
+fi
+
 echo "  Đang khởi động ShortGPT..."
 docker compose up -d || {
     echo "  Không khởi động được. Xem:  docker compose logs --tail 50 shortgpt"

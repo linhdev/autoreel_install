@@ -20,6 +20,21 @@ if exist ".env" for /f "usebackq tokens=1,2 delims==" %%a in (".env") do (
   if /i "%%a"=="SHORTGPT_PORT" set "PORT=%%b"
 )
 
+REM Ban moi, neu co. `docker compose up -d` mot minh chi dung image da nam san
+REM tren may, nen mot ban cai da tai image ve se giu nguyen ban do MAI MAI -
+REM ben ban day ban moi len cung khong toi duoc ai. Kiem tra o day, moi lan
+REM khoi dong, la cach duy nhat no tu toi.
+REM
+REM Nhung khong duoc de no chan: khach mat mang van phai mo duoc app bang ban
+REM dang co. Nen `pull` hong thi chi canh bao roi di tiep.
+echo   Dang kiem tra ban moi...
+docker compose pull --quiet 2>nul
+if errorlevel 1 (
+  echo   ! Khong kiem tra duoc ban moi ^(mat mang?^) - chay ban dang co tren may.
+) else (
+  echo   Da co ban moi nhat.
+)
+
 echo   Dang khoi dong ShortGPT...
 docker compose up -d
 if errorlevel 1 (
