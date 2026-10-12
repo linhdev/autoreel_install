@@ -94,7 +94,11 @@ chmod +x "$STAGE"/*.sh "$STAGE"/*.command 2>/dev/null || true
 
 echo "==> Kiểm tra những gì sắp đóng gói"
 missing=0
-for required in install.sh start.sh docker-compose.yml "Cài đặt.command"; do
+# AutoReel.app là thứ khách thật sự chạy. Thiếu nó thì phần còn lại chỉ là một
+# thư mục script - đúng thứ bộ cài này được viết ra để thay thế. Từ chối đóng,
+# vì một .dmg như vậy vẫn tải về được và vẫn mở được, và không ai biết là sai
+# cho tới khi khách hỏi tại sao không có giao diện.
+for required in "AutoReel.app" install.sh start.sh docker-compose.yml "Cài đặt.command"; do
     if [ ! -e "$STAGE/$required" ]; then
         echo "    THIẾU: $required"
         missing=$((missing + 1))

@@ -47,24 +47,27 @@ nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh
    cửa sổ Finder hiện lên với thư mục `AutoReel` bên trong.
 2. **Kéo thư mục `AutoReel` ra Desktop.** Rồi đóng cửa sổ `.dmg` lại (bấm nút
    đẩy ra cạnh tên ổ đĩa trong Finder).
-3. Trong thư mục vừa kéo ra, **nhấp phải** vào **`Cài đặt.command`** → **Mở**.
-4. Cửa sổ Terminal hiện ra và tự cài đặt. Xong thì nhấp đôi
-   **`Mở AutoReel.command`**.
+3. Trong thư mục vừa kéo ra, **nhấp phải** vào **`AutoReel.app`** → **Mở**.
+4. Giao diện AutoReel hiện ra và tự làm mọi việc: kiểm tra máy, cài Docker, tải
+   dữ liệu, kích hoạt bản quyền. Lần sau chỉ cần nhấp đôi `AutoReel.app`.
 
 > **Bước 2 không bỏ được.** File `.dmg` khi mở ra là ổ **chỉ đọc**. Chạy thẳng
-> từ trong đó thì `install.sh` chết ngay ở bước đầu vì không tạo được file `.env`
-> — và câu báo lỗi là "Read-only file system", nghe như hỏng đĩa chứ không như
-> "quên kéo thư mục ra". Ba file `.command` giờ tự phát hiện việc này và nhắc
+> từ trong đó thì app không tạo được file `.env` hay thư mục `data`, và câu báo
+> lỗi là "Read-only file system" — nghe như hỏng đĩa chứ không như "quên kéo
+> thư mục ra". Ba file `.command` trong thư mục tự phát hiện việc này và nhắc
 > bạn kéo ra, nhưng kéo ra từ đầu thì nhanh hơn.
 >
 > **Bước 3 phải là nhấp phải, không phải nhấp đôi** — nhưng chỉ lần đầu. macOS
 > chặn mọi thứ vừa tải về cho tới khi bạn xác nhận một lần; nhấp đôi sẽ hiện
 > *"không mở được vì từ nhà phát triển không xác định"*. Nhấp phải → **Mở** →
-> **Mở** là qua. Chính file đó gỡ chặn cho cả thư mục, nên từ đó
-> `Mở AutoReel.command` và `Mở Chrome Shopee.command` nhấp đôi bình thường.
+> **Mở** là qua, và chỉ một lần.
 >
-> **Bạn không phải gõ gì trong Terminal.** `Cài đặt.command` tự chạy
-> `install.sh` — nó chỉ là cách nhấp đôi để chạy script đó.
+> **Bạn không phải gõ gì trong Terminal.** Toàn bộ việc cài đặt nằm trong cửa sổ
+> của app.
+>
+> `Cài đặt.command` và `Mở AutoReel.command` vẫn còn trong thư mục, nhưng giờ
+> chúng chỉ **mở app** — dùng khi nhấp thẳng vào `AutoReel.app` bị chặn. Cách
+> chính là nhấp vào app.
 
 Cách cũ, nếu bạn quen Terminal — mở **Terminal**, `cd` vào thư mục này rồi
 `./install.sh`. Không cần cài gì trước: script dùng Homebrew nếu có, và tải

@@ -1,23 +1,23 @@
 #!/bin/bash
-# Nhấp đôi file này để cài AutoReel. Bản macOS của install.sh.
+# Nhấp đôi file này để cài AutoReel.
 #
-# Một file .command là một script chạy khi nhấp đôi trong Finder - macOS mở
-# Terminal và chạy nó. Ba việc dưới đây là những thứ một script chạy kiểu đó
-# phải tự lo, mà gọi thẳng install.sh thì không có:
+# **Nó không cài gì cả - nó mở AutoReel.app.** Toàn bộ việc cài đặt nằm trong
+# wizard của app: kiểm tra máy, cài Docker, kéo image, kích hoạt bản quyền. Việc
+# của file này chỉ là một cách thứ hai để mở app, dùng khi nhấp đôi thẳng vào
+# AutoReel.app bị macOS chặn.
 #
-#   1. Thư mục làm việc. Finder chạy .command với thư mục làm việc là thư mục
-#      nhà, không phải thư mục chứa file. install.sh tự cd, nhưng nó cd theo
-#      đường dẫn *tương đối của chính nó*, nên phải đứng đúng chỗ trước.
+# Trước đây file này chạy `install.sh` trong Terminal, và khách nhìn thấy toàn bộ
+# quá trình dưới dạng chữ chạy. App có giao diện rồi thì đường đó chỉ còn là
+# đường lui.
 #
-#   2. Cờ cách ly (quarantine). Mọi thứ trong một .dmg vừa tải về đều bị macOS
-#      gắn cờ này, và Gatekeeper chặn không cho chạy. Chính file này cũng bị
-#      chặn ở lần đầu - nên nó phải được mở bằng cách **nhấp phải → Mở**, một
-#      lần duy nhất. Sau khi chạy được, nó gỡ cờ cho cả thư mục, và từ đó
-#      install.sh cùng mọi file khác chạy sạch, không hỏi gì nữa.
+# Vẫn giữ hai thứ mà mọi .command cần:
 #
-#   3. Cửa sổ đóng mất. Terminal đóng ngay khi script kết thúc, nên bảng tổng
-#      kết của install.sh - thứ duy nhất nói cho khách biết việc gì chưa xong -
-#      sẽ loé lên rồi biến mất. Dòng `read` ở cuối giữ nó lại.
+#   1. Thư mục làm việc. Finder chạy .command với cwd là thư mục nhà, không phải
+#      thư mục chứa file.
+#   2. Gỡ cờ cách ly. Mọi thứ trong một .dmg vừa tải đều bị macOS gắn cờ, và
+#      Gatekeeper chặn. Chính file này cũng bị chặn ở lần đầu - nên nó phải được
+#      mở bằng **nhấp phải → Mở**, một lần duy nhất. Sau đó nó gỡ cờ cho cả thư
+#      mục, và AutoReel.app lẫn những file còn lại chạy sạch.
 
 set -u
 
@@ -27,20 +27,20 @@ cd "$(dirname "$0")" || {
     exit 1
 }
 
-# Gỡ cờ cách ly cho cả thư mục. Không có gì để gỡ cũng không sao - chạy từ ổ
-# USB hay từ thư mục đã tải lâu rồi thì lệnh này chỉ im lặng không làm gì.
 xattr -dr com.apple.quarantine . 2>/dev/null
 
-# Đang chạy từ **bên trong** file .dmg vừa mở?
-#
-# Đây là chỗ dễ sai nhất, và sai một cách rất khó hiểu. Một .dmg gắn vào là ổ
-# chỉ đọc. Khách mở .dmg ra, thấy thư mục AutoReel, nhấp đôi luôn - macOS cho
-# chạy, rồi install.sh chết ở bước đầu tiên vì không tạo được .env. Câu báo lỗi
-# là "Read-only file system", nghe như hỏng đĩa chứ không như "bạn quên kéo
-# thư mục ra".
-#
-# Cách phát hiện: thử ghi một file. Đơn giản hơn là đoán qua đường dẫn, và
-# đúng cho mọi trường hợp chỉ đọc - .dmg, đĩa quang, ổ mạng được gắn read-only.
+if [ ! -d "./AutoReel.app" ]; then
+    echo
+    echo "  Không thấy AutoReel.app cạnh file này."
+    echo "  Có thể bạn đang chạy file từ trong file nén (.zip) - hãy kéo cả thư mục"
+    echo "  ra Desktop hoặc Applications trước, rồi nhấp đôi lại."
+    echo
+    read -r -p "  Nhấn Enter để đóng."
+    exit 1
+fi
+
+# Ổ chỉ đọc? Chạy thẳng từ trong .dmg thì app không ghi được .env hay data/.
+# Xem giải thích đầy đủ ở "Mở Chrome Shopee.command".
 if ! touch .autoreel-write-test 2>/dev/null; then
     echo
     echo "  Thư mục này đang nằm trong file .dmg vừa mở, và ổ đó chỉ đọc được."
@@ -50,36 +50,13 @@ if ! touch .autoreel-write-test 2>/dev/null; then
     echo "    2. Đóng cửa sổ .dmg lại"
     echo "    3. Nhấp đôi \"Cài đặt.command\" trong thư mục vừa kéo ra"
     echo
-    echo "  Không cần chạy từ trong file .dmg - chạy ở đó cũng không được."
-    echo
     read -r -p "  Nhấn Enter để đóng."
     exit 1
 fi
 rm -f .autoreel-write-test
 
-echo
-echo "  AutoReel - cài đặt"
-echo "  Thư mục: $PWD"
-echo
-
-if [ ! -f ./install.sh ]; then
-    echo "  Không thấy install.sh cạnh file này."
-    echo "  Có thể bạn đang chạy file từ trong file nén (.zip) - hãy kéo cả thư mục"
-    echo "  ra Desktop hoặc Applications trước, rồi nhấp đôi lại."
-    echo
-    read -r -p "  Nhấn Enter để đóng."
-    exit 1
-fi
-
-bash ./install.sh
-status=$?
+# --first-run để app mở thẳng vào wizard, kể cả khi máy này đã cài xong một lần.
+open "./AutoReel.app" --args --first-run
 
 echo
-if [ "$status" -eq 0 ]; then
-    echo "  Xong. Nhấp đôi \"Mở AutoReel.command\" để dùng."
-else
-    echo "  Cài đặt chưa hoàn tất - xem các dòng báo lỗi ở trên."
-    echo "  Chạy lại file này sau khi sửa xong cũng được, không phải làm lại từ đầu."
-fi
-echo
-read -r -p "  Nhấn Enter để đóng cửa sổ này."
+echo "  AutoReel đang mở. Cửa sổ này tự đóng."
