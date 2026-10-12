@@ -43,7 +43,16 @@ jobs:
         # dưới dạng "image not recognized" mà không nói gì thêm.
         run: |
           DMG="dist/AutoReel-${{ inputs.version }}.dmg"
-          MOUNT=$(hdiutil attach "$DMG" -nobrowse -readonly | tail -1 | awk '{$1=""; print substr($0,2)}')
+
+          # -mountpoint với một đường dẫn tự chọn, chứ không đọc điểm gắn ra từ
+          # output của hdiutil. Dòng đó có dạng "<dev> <loại> <điểm gắn>", nhưng
+          # trên runner macOS nó còn kèm một cột UUID ở đầu - nên cách phân tích
+          # "bỏ cột đầu" cho ra một chuỗi hai phần và mọi lần kiểm file sau đó
+          # đều báo thiếu, dù .dmg hoàn toàn bình thường. Tự đặt điểm gắn thì
+          # không phải đoán gì.
+          MOUNT="$RUNNER_TEMP/autoreel-dmg"
+          rm -rf "$MOUNT"; mkdir -p "$MOUNT"
+          hdiutil attach "$DMG" -nobrowse -readonly -mountpoint "$MOUNT"
           echo "Đã gắn vào: $MOUNT"
           ls -la "$MOUNT/AutoReel" | head -20
 
