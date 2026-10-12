@@ -177,8 +177,8 @@ Muốn ghim đúng một bản (để mọi máy khách hàng chạy giống nha
 `.env`:
 
 ```
-SHORTGPT_IMAGE=ghcr.io/linhdev/shortgpt:2026-10-12
-MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-12
+SHORTGPT_IMAGE=ghcr.io/linhdev/shortgpt:2026-10-12.2
+MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-12.2
 ```
 
 > **Vì sao `start` phải tự kiểm tra.** `docker compose up -d` một mình chỉ dùng
