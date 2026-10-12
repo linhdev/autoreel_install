@@ -15,9 +15,16 @@
 #   1. Thư mục làm việc. Finder chạy .command với cwd là thư mục nhà, không phải
 #      thư mục chứa file.
 #   2. Gỡ cờ cách ly. Mọi thứ trong một .dmg vừa tải đều bị macOS gắn cờ, và
-#      Gatekeeper chặn. Chính file này cũng bị chặn ở lần đầu - nên nó phải được
-#      mở bằng **nhấp phải → Mở**, một lần duy nhất. Sau đó nó gỡ cờ cho cả thư
-#      mục, và AutoReel.app lẫn những file còn lại chạy sạch.
+#      Gatekeeper chặn. Chính file này cũng bị chặn ở lần đầu.
+#
+#      **Nhấp phải → Mở không còn tác dụng** trên macOS 15 trở lên. Hai cách
+#      còn lại: mở System Settings → Privacy & Security → bấm "Open Anyway" ở
+#      mục Security, hoặc gõ trong Terminal:
+#
+#          xattr -dr com.apple.quarantine /đường/dẫn/tới/AutoReel
+#
+#      Cách Terminal nhanh hơn và chạy được trên mọi bản macOS. Sau đó file này
+#      gỡ cờ cho cả thư mục, và AutoReel.app lẫn những file còn lại chạy sạch.
 
 set -u
 

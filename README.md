@@ -47,9 +47,9 @@ nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh
    cửa sổ Finder hiện lên với thư mục `AutoReel` bên trong.
 2. **Kéo thư mục `AutoReel` ra Desktop.** Rồi đóng cửa sổ `.dmg` lại (bấm nút
    đẩy ra cạnh tên ổ đĩa trong Finder).
-3. Trong thư mục vừa kéo ra, **nhấp phải** vào **`AutoReel.app`** → **Mở**.
-4. Giao diện AutoReel hiện ra và tự làm mọi việc: kiểm tra máy, cài Docker, tải
-   dữ liệu, kích hoạt bản quyền. Lần sau chỉ cần nhấp đôi `AutoReel.app`.
+3. **Gỡ chặn của macOS** — làm một lần, xem mục dưới.
+4. Mở **`AutoReel.app`**. Giao diện hiện ra và tự làm mọi việc: kiểm tra máy, cài
+   Docker, tải dữ liệu, kích hoạt bản quyền. Lần sau chỉ cần nhấp đôi.
 
 > **Bước 2 không bỏ được.** File `.dmg` khi mở ra là ổ **chỉ đọc**. Chạy thẳng
 > từ trong đó thì app không tạo được file `.env` hay thư mục `data`, và câu báo
@@ -57,17 +57,38 @@ nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh
 > thư mục ra". Ba file `.command` trong thư mục tự phát hiện việc này và nhắc
 > bạn kéo ra, nhưng kéo ra từ đầu thì nhanh hơn.
 >
-> **Bước 3 phải là nhấp phải, không phải nhấp đôi** — nhưng chỉ lần đầu. macOS
-> chặn mọi thứ vừa tải về cho tới khi bạn xác nhận một lần; nhấp đôi sẽ hiện
-> *"không mở được vì từ nhà phát triển không xác định"*. Nhấp phải → **Mở** →
-> **Mở** là qua, và chỉ một lần.
->
-> **Bạn không phải gõ gì trong Terminal.** Toàn bộ việc cài đặt nằm trong cửa sổ
-> của app.
+> **Bạn không phải gõ gì trong Terminal để cài đặt.** Toàn bộ việc cài nằm trong
+> cửa sổ của app. Chỉ có một dòng ở bước 3, và nó chỉ để macOS chịu mở app ra.
 >
 > `Cài đặt.command` và `Mở AutoReel.command` vẫn còn trong thư mục, nhưng giờ
-> chúng chỉ **mở app** — dùng khi nhấp thẳng vào `AutoReel.app` bị chặn. Cách
-> chính là nhấp vào app.
+> chúng chỉ **mở app**. Cách chính là mở `AutoReel.app`.
+
+## Gỡ chặn của macOS (một lần)
+
+Lần đầu mở, macOS sẽ nói một trong hai câu:
+
+- *"Apple could not verify AutoReel is free of malware…"*
+- *"AutoReel cannot be opened because the developer cannot be verified"*
+
+**Cả hai đều bình thường.** App không có chứng chỉ Apple Developer (99 USD/năm),
+nên Apple không xác nhận được ai viết nó. Không phải app hỏng.
+
+**Cách 1 — Terminal (nhanh nhất, dùng được trên mọi bản macOS):**
+
+Mở **Terminal**, gõ `xattr -dr com.apple.quarantine ` (nhớ dấu cách ở cuối), rồi
+**kéo thư mục `AutoReel` vào cửa sổ Terminal** — nó tự điền đường dẫn — rồi Enter.
+Xong. Từ đó mở app bình thường, và cả ba file `.command` cũng chạy được.
+
+**Cách 2 — bằng giao diện:**
+
+1. Nhấp đôi `AutoReel.app` → hiện thông báo → bấm **Done**
+2. Mở **System Settings** → **Privacy & Security**
+3. Kéo xuống mục **Security**
+4. Có dòng *"AutoReel was blocked…"* → bấm **Open Anyway**
+5. Nhập mật khẩu máy, rồi mở app
+
+> **Nhấp phải → Mở không còn tác dụng** trên macOS 15 trở lên — Apple đã bỏ cách
+> đó. Nếu bạn đọc ở đâu đó hướng dẫn nhấp phải, nó đã cũ.
 
 Cách cũ, nếu bạn quen Terminal — mở **Terminal**, `cd` vào thư mục này rồi
 `./install.sh`. Không cần cài gì trước: script dùng Homebrew nếu có, và tải

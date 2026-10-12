@@ -2,8 +2,9 @@
 # Nhấp đôi file này để mở AutoReel.
 #
 # Cùng lý do như "Cài đặt.command": đây chỉ là cách thứ hai để mở AutoReel.app,
-# dùng khi nhấp đôi thẳng vào app bị macOS chặn. Cách chính là nhấp phải vào
-# AutoReel.app → Mở (lần đầu), sau đó nhấp đôi bình thường.
+# dùng khi nhấp đôi thẳng vào app bị macOS chặn. Cách chính là mở AutoReel.app,
+# sau khi đã gỡ chặn một lần - xem đầu file "Cài đặt.command" để biết hai cách
+# gỡ (System Settings, hoặc một dòng xattr trong Terminal).
 
 set -u
 
