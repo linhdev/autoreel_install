@@ -47,48 +47,38 @@ nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh
    cửa sổ Finder hiện lên với thư mục `AutoReel` bên trong.
 2. **Kéo thư mục `AutoReel` ra Desktop.** Rồi đóng cửa sổ `.dmg` lại (bấm nút
    đẩy ra cạnh tên ổ đĩa trong Finder).
-3. **Gỡ chặn của macOS** — làm một lần, xem mục dưới.
-4. Mở **`AutoReel.app`**. Giao diện hiện ra và tự làm mọi việc: kiểm tra máy, cài
-   Docker, tải dữ liệu, kích hoạt bản quyền. Lần sau chỉ cần nhấp đôi.
+3. Mở **Terminal**, gõ `cd ` (có dấu cách), **kéo thư mục vừa kéo ra vào cửa sổ
+   Terminal**, rồi Enter.
+4. Gõ `./install.sh` rồi Enter. Script tự cài đặt và in bảng tổng kết ở cuối.
 
 > **Bước 2 không bỏ được.** File `.dmg` khi mở ra là ổ **chỉ đọc**. Chạy thẳng
-> từ trong đó thì app không tạo được file `.env` hay thư mục `data`, và câu báo
-> lỗi là "Read-only file system" — nghe như hỏng đĩa chứ không như "quên kéo
-> thư mục ra". Ba file `.command` trong thư mục tự phát hiện việc này và nhắc
-> bạn kéo ra, nhưng kéo ra từ đầu thì nhanh hơn.
+> từ trong đó thì `install.sh` chết ngay ở bước đầu vì không tạo được file `.env`
+> — và câu báo lỗi là "Read-only file system", nghe như hỏng đĩa chứ không như
+> "quên kéo thư mục ra". Ba file `.command` trong thư mục tự phát hiện việc này
+> và nhắc bạn kéo ra, nhưng kéo ra từ đầu thì nhanh hơn.
 >
-> **Bạn không phải gõ gì trong Terminal để cài đặt.** Toàn bộ việc cài nằm trong
-> cửa sổ của app. Chỉ có một dòng ở bước 3, và nó chỉ để macOS chịu mở app ra.
+> **Vì sao là Terminal, không phải nhấp đôi.** Trong thư mục có sẵn
+> `Cài đặt.command` để nhấp đôi, nhưng macOS chặn mọi file thực thi tải từ mạng,
+> và **nhấp phải → Mở không còn tác dụng** từ macOS 15. Gỡ chặn cũng phải mở
+> Terminal rồi — nên gõ thẳng `./install.sh` cho nhanh.
 >
-> `Cài đặt.command` và `Mở AutoReel.command` vẫn còn trong thư mục, nhưng giờ
-> chúng chỉ **mở app**. Cách chính là mở `AutoReel.app`.
+> Chạy script trong Terminal **không** bị macOS chặn: cờ cách ly chỉ có hiệu lực
+> khi Finder mở file, còn shell đọc và chạy script thì không ai hỏi.
+>
+> Nếu Terminal báo `permission denied`: gõ `chmod +x *.sh` rồi chạy lại.
 
-## Gỡ chặn của macOS (một lần)
+## Ba file `.command`
 
-Lần đầu mở, macOS sẽ nói một trong hai câu:
+Vẫn nằm trong thư mục, dùng khi macOS chịu mở chúng (máy chưa từng chặn, hoặc
+bạn đã gỡ cờ cách ly):
 
-- *"Apple could not verify AutoReel is free of malware…"*
-- *"AutoReel cannot be opened because the developer cannot be verified"*
+| File | Việc |
+|---|---|
+| `Cài đặt.command` | Chạy `install.sh` |
+| `Mở AutoReel.command` | Chạy `start.sh` — mở app |
+| `Mở Chrome Shopee.command` | Mở cửa sổ Chrome để đăng nhập Shopee |
 
-**Cả hai đều bình thường.** App không có chứng chỉ Apple Developer (99 USD/năm),
-nên Apple không xác nhận được ai viết nó. Không phải app hỏng.
-
-**Cách 1 — Terminal (nhanh nhất, dùng được trên mọi bản macOS):**
-
-Mở **Terminal**, gõ `xattr -dr com.apple.quarantine ` (nhớ dấu cách ở cuối), rồi
-**kéo thư mục `AutoReel` vào cửa sổ Terminal** — nó tự điền đường dẫn — rồi Enter.
-Xong. Từ đó mở app bình thường, và cả ba file `.command` cũng chạy được.
-
-**Cách 2 — bằng giao diện:**
-
-1. Nhấp đôi `AutoReel.app` → hiện thông báo → bấm **Done**
-2. Mở **System Settings** → **Privacy & Security**
-3. Kéo xuống mục **Security**
-4. Có dòng *"AutoReel was blocked…"* → bấm **Open Anyway**
-5. Nhập mật khẩu máy, rồi mở app
-
-> **Nhấp phải → Mở không còn tác dụng** trên macOS 15 trở lên — Apple đã bỏ cách
-> đó. Nếu bạn đọc ở đâu đó hướng dẫn nhấp phải, nó đã cũ.
+Chúng chỉ là cách nhấp đôi để chạy đúng những script đó.
 
 Cách cũ, nếu bạn quen Terminal — mở **Terminal**, `cd` vào thư mục này rồi
 `./install.sh`. Không cần cài gì trước: script dùng Homebrew nếu có, và tải
@@ -291,12 +281,29 @@ này — GitHub cho thuê một máy Mac thật để chạy đúng script đó.
 được cho cả Mac Intel lẫn Apple Silicon**. Kiến trúc chỉ thành vấn đề ở image
 Docker, và image có sẵn cả hai bản — `docker pull` tự lấy đúng bản.
 
-Script tự loại `data/`, `.env`, `.chrome-shopee/`, `tools/`, `.github/`, `.git/`
-và `dist/` ra khỏi bản đóng gói, rồi **từ chối đóng** nếu phát hiện `.env` hoặc
-`data/` lọt vào. Workflow kiểm thêm ba thứ nữa sau khi tạo file: `.dmg` gắn vào
-được, các script còn quyền chạy, và **không file nào có ký tự CR** — một script
-bash có CRLF chết ngay ở dòng shebang và khách chỉ thấy cửa sổ Terminal loé lên
-rồi tắt.
+Script tự loại `data/`, `.env`, `.chrome-shopee/`, `tools/`, `.github/`, `.git/`,
+`dist/`, `logs/` và `AutoReel.app/` ra khỏi bản đóng gói, rồi **từ chối đóng**
+nếu phát hiện `.env`, `data/` hoặc `logs/` lọt vào. Workflow kiểm thêm ba thứ
+nữa sau khi tạo file: `.dmg` gắn vào được, các script còn quyền chạy, và
+**không file nào có ký tự CR** — một script bash có CRLF chết ngay ở dòng
+shebang và khách chỉ thấy cửa sổ Terminal loé lên rồi tắt.
+
+**Không cần secret nào.** Workflow chỉ đọc chính repo này.
+
+### Giao diện macOS — đã viết, không phát hành
+
+`installer/src/AutoReel.Manager.Mac` trong kho mã nguồn là một giao diện macOS
+thật (Avalonia), đã build và **chạy được** — CI chứng minh nó khởi động, ghi báo
+cáo, và chạy từ trong `.dmg` đã gắn.
+
+Nó không được phát hành, và lý do **không phải kỹ thuật**: macOS chặn mọi file
+thực thi tải từ mạng. Khách mở app lên sẽ gặp *"Apple could not verify…"* rồi
+phải vào System Settings → Privacy & Security → **Open Anyway**. Phiền hơn hẳn
+việc mở Terminal gõ `./install.sh` — mà chạy script trong Terminal thì macOS
+**không** chặn, vì cờ cách ly chỉ có hiệu lực khi Finder mở file.
+
+Chỉ chứng chỉ Apple Developer (99 USD/năm) mới hết hẳn chuyện đó. Cho tới lúc
+đó, script nhanh hơn, và đó là lựa chọn có ý thức chứ không phải bỏ dở.
 
 ### Đẩy image
 

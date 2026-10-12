@@ -1,0 +1,91 @@
+name: Build macOS .dmg
+
+# Đóng thư mục này thành AutoReel.dmg để phát cho khách dùng Mac.
+#
+# **Phải chạy trên macOS**: `hdiutil` là công cụ duy nhất tạo được một .dmg đúng
+# chuẩn, và nó không có bản cho Windows. GitHub cho thuê một máy Mac thật.
+#
+# **Không cần secret nào.** Workflow chỉ đọc chính repo này - `GITHUB_TOKEN` mặc
+# định luôn đủ quyền cho việc đó. Bản trước có thêm một bước build giao diện
+# macOS từ kho mã nguồn, và bước đó mới cần token; giao diện không phát hành nữa
+# nên token cũng không cần nữa.
+#
+# Chạy tay chứ không tự động theo push: runner macOS bị tính **gấp 10 lần** phút
+# so với Linux, và một lượt ở đây chỉ có nghĩa khi sắp phát hành.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, ví dụ 2026-10-12.2'
+        required: true
+        type: string
+
+jobs:
+  dmg:
+    runs-on: macos-latest
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Đóng gói .dmg
+        run: |
+          chmod +x tools/build-dmg.sh
+          ./tools/build-dmg.sh "${{ inputs.version }}"
+
+      # `hdiutil create` thành công không có nghĩa là cái .dmg gắn vào được, và
+      # một file hỏng chỉ lộ ra ở máy khách dưới dạng "image not recognized" mà
+      # không nói gì thêm.
+      - name: Kiểm tra .dmg gắn được
+        run: |
+          set -euo pipefail
+          DMG="dist/AutoReel-${{ inputs.version }}.dmg"
+
+          # -mountpoint với một đường dẫn tự chọn, chứ không đọc điểm gắn ra từ
+          # output của hdiutil. Dòng đó có dạng "<dev> <loại> <điểm gắn>", nhưng
+          # trên runner macOS nó còn kèm một cột UUID ở đầu - nên cách phân tích
+          # "bỏ cột đầu" cho ra một chuỗi hai phần và mọi lần kiểm file sau đó
+          # đều báo thiếu, dù .dmg hoàn toàn bình thường.
+          MOUNT="$RUNNER_TEMP/autoreel-dmg"
+          rm -rf "$MOUNT"; mkdir -p "$MOUNT"
+          hdiutil attach "$DMG" -nobrowse -readonly -mountpoint "$MOUNT"
+
+          fail() { echo "::error::$1"; hdiutil detach "$MOUNT" -force || true; exit 1; }
+
+          echo "--- gốc ổ đĩa ---"; ls -la "$MOUNT"
+          echo "--- trong AutoReel ---"; ls -la "$MOUNT/AutoReel" | head -20
+
+          for f in "Cài đặt.command" "Mở AutoReel.command" "Mở Chrome Shopee.command" \
+                   install.sh start.sh docker-compose.yml; do
+            test -f "$MOUNT/AutoReel/$f" || fail "Thiếu $f trong .dmg"
+          done
+
+          # Quyền chạy, và xuống dòng. Hai thứ này là loại lỗi chỉ hiện ra ở máy
+          # khách: một script mất bit chạy thì Finder nói "could not be
+          # executed", còn một script có CRLF thì chết ở dòng shebang với "bad
+          # interpreter: /bin/bash^M" - khách chỉ thấy cửa sổ Terminal loé lên
+          # rồi tắt, không manh mối nào.
+          for f in "Cài đặt.command" "Mở AutoReel.command" "Mở Chrome Shopee.command" install.sh start.sh; do
+            test -x "$MOUNT/AutoReel/$f" || fail "$f mất quyền chạy"
+            grep -qU $'\r' "$MOUNT/AutoReel/$f" && fail "$f có ký tự CR"
+          done
+
+          test -e "$MOUNT/AutoReel/.env"      && fail ".env lọt vào .dmg"
+          test -d "$MOUNT/AutoReel/data"      && fail "data/ lọt vào .dmg"
+          test -d "$MOUNT/AutoReel/logs"      && fail "logs/ lọt vào .dmg"
+          test -d "$MOUNT/AutoReel/AutoReel.app" && fail "AutoReel.app lọt vào .dmg"
+
+          # Thư mục phải ghi được - app tạo .env và data/ ngay trong đó. Một
+          # .dmg chỉ-đọc là chuyện bình thường, nhưng cái này được kéo ra trước
+          # khi dùng, nên đây chỉ là phép kiểm cấu trúc.
+          hdiutil detach "$MOUNT" -force
+          echo "OK - .dmg gắn được, đủ file, quyền chạy đúng, không lẫn dữ liệu."
+
+      - name: Lưu .dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoReel-dmg-${{ inputs.version }}
+          path: dist/AutoReel-${{ inputs.version }}.dmg
+          if-no-files-found: error
+          retention-days: 30

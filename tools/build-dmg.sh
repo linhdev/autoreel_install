@@ -12,9 +12,16 @@
 # tự loại mình ra khỏi cái .dmg mà nó tạo (xem DANH SÁCH LOẠI TRỪ bên dưới).
 #
 # Cái .dmg chứa **thư mục**, không phải một ứng dụng .app. Khách mở ra, thấy
-# thư mục AutoReel với ba file .command nhấp đôi được. Đó không phải cách đóng
+# thư mục AutoReel với ba file .command và install.sh. Đó không phải cách đóng
 # gói quen thuộc của Mac (kéo vào Applications), nhưng nó là cách trung thực:
 # app này chạy bằng Docker, không có gì để "cài vào Applications" cả.
+#
+# Có một giao diện macOS thật (Avalonia, trong installer/src/AutoReel.Manager.Mac
+# của kho mã nguồn) và nó chạy được. Nó **không được phát hành**, và lý do không
+# phải kỹ thuật: macOS chặn mọi file thực thi tải từ mạng, nên khách mở app lên
+# sẽ gặp "Apple could not verify…" và phải vào System Settings bấm Open Anyway -
+# phiền hơn nhiều so với mở Terminal gõ một dòng. Chỉ có chứng chỉ Apple
+# Developer (99 USD/năm) mới hết hẳn, và cho tới lúc đó thì script nhanh hơn.
 
 set -eu
 
@@ -67,6 +74,11 @@ DMG="$OUT/AutoReel-$VERSION.dmg"
 #                    gói thì đây là dấu vết của chính lượt thử nghiệm vừa rồi -
 #                    và nó đã lọt vào một bản .dmg một lần, mang theo đường dẫn
 #                    thư mục của máy build.
+#   AutoReel.app/    giao diện macOS. Đã viết xong và chạy được, nhưng **không
+#                    phát hành**: macOS chặn mọi file thực thi tải từ mạng, và
+#                    gỡ chặn còn phiền hơn việc mở Terminal gõ ./install.sh.
+#                    Loại ra ở đây để nếu có ai đó build app rồi để lẫn trong
+#                    thư mục này thì nó không lặng lẽ đi theo bản phát hành.
 #   *.zip            file nén tải về, không phải nội dung.
 EXCLUDES=(
     --exclude "data"
@@ -77,6 +89,7 @@ EXCLUDES=(
     --exclude ".git"
     --exclude "dist"
     --exclude "logs"
+    --exclude "AutoReel.app"
     --exclude ".DS_Store"
 )
 
@@ -99,11 +112,7 @@ chmod +x "$STAGE"/*.sh "$STAGE"/*.command 2>/dev/null || true
 
 echo "==> Kiểm tra những gì sắp đóng gói"
 missing=0
-# AutoReel.app là thứ khách thật sự chạy. Thiếu nó thì phần còn lại chỉ là một
-# thư mục script - đúng thứ bộ cài này được viết ra để thay thế. Từ chối đóng,
-# vì một .dmg như vậy vẫn tải về được và vẫn mở được, và không ai biết là sai
-# cho tới khi khách hỏi tại sao không có giao diện.
-for required in "AutoReel.app" install.sh start.sh docker-compose.yml "Cài đặt.command"; do
+for required in install.sh start.sh docker-compose.yml "Cài đặt.command"; do
     if [ ! -e "$STAGE/$required" ]; then
         echo "    THIẾU: $required"
         missing=$((missing + 1))
