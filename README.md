@@ -41,18 +41,30 @@ triển, và hai script ấy nằm trong kho mã nguồn — xem mục cuối fi
 **Windows:** cài **Git for Windows** (<https://git-scm.com/download/win>), rồi
 nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh`.
 
-**macOS:** mở file **`AutoReel.dmg`**, kéo thư mục `AutoReel` ra Desktop (hoặc
-Applications), rồi **nhấp phải** vào **`Cài đặt.command`** → **Mở**.
+**macOS** — bốn bước, theo đúng thứ tự:
 
-> **Lần đầu phải nhấp phải → Mở, không phải nhấp đôi.** macOS chặn mọi thứ vừa
-> tải về cho tới khi bạn xác nhận một lần. Nhấp đôi sẽ hiện *"không mở được vì
-> từ nhà phát triển không xác định"*. Nhấp phải → **Mở** → **Mở** là qua được,
-> và chỉ cần làm một lần: chính file đó gỡ chặn cho cả thư mục, nên
-> `Mở AutoReel.command` và `Mở Chrome Shopee.command` sau đó nhấp đôi bình
-> thường.
+1. **Nhấp đôi `AutoReel.dmg`** vừa tải về. macOS mở nó ra như một ổ đĩa, và một
+   cửa sổ Finder hiện lên với thư mục `AutoReel` bên trong.
+2. **Kéo thư mục `AutoReel` ra Desktop.** Rồi đóng cửa sổ `.dmg` lại (bấm nút
+   đẩy ra cạnh tên ổ đĩa trong Finder).
+3. Trong thư mục vừa kéo ra, **nhấp phải** vào **`Cài đặt.command`** → **Mở**.
+4. Cửa sổ Terminal hiện ra và tự cài đặt. Xong thì nhấp đôi
+   **`Mở AutoReel.command`**.
+
+> **Bước 2 không bỏ được.** File `.dmg` khi mở ra là ổ **chỉ đọc**. Chạy thẳng
+> từ trong đó thì `install.sh` chết ngay ở bước đầu vì không tạo được file `.env`
+> — và câu báo lỗi là "Read-only file system", nghe như hỏng đĩa chứ không như
+> "quên kéo thư mục ra". Ba file `.command` giờ tự phát hiện việc này và nhắc
+> bạn kéo ra, nhưng kéo ra từ đầu thì nhanh hơn.
 >
-> Đừng chạy file trực tiếp từ trong file nén `.zip` — hãy kéo cả thư mục ra
-> trước. Chạy từ trong file nén thì macOS không giải nén được những gì cần thiết.
+> **Bước 3 phải là nhấp phải, không phải nhấp đôi** — nhưng chỉ lần đầu. macOS
+> chặn mọi thứ vừa tải về cho tới khi bạn xác nhận một lần; nhấp đôi sẽ hiện
+> *"không mở được vì từ nhà phát triển không xác định"*. Nhấp phải → **Mở** →
+> **Mở** là qua. Chính file đó gỡ chặn cho cả thư mục, nên từ đó
+> `Mở AutoReel.command` và `Mở Chrome Shopee.command` nhấp đôi bình thường.
+>
+> **Bạn không phải gõ gì trong Terminal.** `Cài đặt.command` tự chạy
+> `install.sh` — nó chỉ là cách nhấp đôi để chạy script đó.
 
 Cách cũ, nếu bạn quen Terminal — mở **Terminal**, `cd` vào thư mục này rồi
 `./install.sh`. Không cần cài gì trước: script dùng Homebrew nếu có, và tải

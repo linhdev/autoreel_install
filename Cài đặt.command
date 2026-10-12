@@ -31,6 +31,32 @@ cd "$(dirname "$0")" || {
 # USB hay từ thư mục đã tải lâu rồi thì lệnh này chỉ im lặng không làm gì.
 xattr -dr com.apple.quarantine . 2>/dev/null
 
+# Đang chạy từ **bên trong** file .dmg vừa mở?
+#
+# Đây là chỗ dễ sai nhất, và sai một cách rất khó hiểu. Một .dmg gắn vào là ổ
+# chỉ đọc. Khách mở .dmg ra, thấy thư mục AutoReel, nhấp đôi luôn - macOS cho
+# chạy, rồi install.sh chết ở bước đầu tiên vì không tạo được .env. Câu báo lỗi
+# là "Read-only file system", nghe như hỏng đĩa chứ không như "bạn quên kéo
+# thư mục ra".
+#
+# Cách phát hiện: thử ghi một file. Đơn giản hơn là đoán qua đường dẫn, và
+# đúng cho mọi trường hợp chỉ đọc - .dmg, đĩa quang, ổ mạng được gắn read-only.
+if ! touch .autoreel-write-test 2>/dev/null; then
+    echo
+    echo "  Thư mục này đang nằm trong file .dmg vừa mở, và ổ đó chỉ đọc được."
+    echo
+    echo "  Hãy làm thế này:"
+    echo "    1. Kéo thư mục AutoReel ra Desktop (hoặc Applications)"
+    echo "    2. Đóng cửa sổ .dmg lại"
+    echo "    3. Nhấp đôi \"Cài đặt.command\" trong thư mục vừa kéo ra"
+    echo
+    echo "  Không cần chạy từ trong file .dmg - chạy ở đó cũng không được."
+    echo
+    read -r -p "  Nhấn Enter để đóng."
+    exit 1
+fi
+rm -f .autoreel-write-test
+
 echo
 echo "  AutoReel - cài đặt"
 echo "  Thư mục: $PWD"

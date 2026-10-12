@@ -14,6 +14,18 @@ set -u
 cd "$(dirname "$0")" || exit 1
 xattr -dr com.apple.quarantine . 2>/dev/null
 
+# Chạy từ trong .dmg chưa kéo ra? Hồ sơ Chrome (.chrome-shopee) phải ghi được
+# xuống đĩa - xem giải thích đầy đủ ở "Cài đặt.command".
+if ! touch .autoreel-write-test 2>/dev/null; then
+    echo
+    echo "  Thư mục này đang nằm trong file .dmg, chỉ đọc được."
+    echo "  Kéo thư mục AutoReel ra Desktop (hoặc Applications) rồi chạy lại."
+    echo
+    read -r -p "  Nhấn Enter để đóng."
+    exit 1
+fi
+rm -f .autoreel-write-test
+
 if [ ! -f ./open-chrome.sh ]; then
     echo "  Không thấy open-chrome.sh cạnh file này."
     read -r -p "  Nhấn Enter để đóng."
