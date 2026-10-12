@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# Đóng thư mục này thành AutoReel.dmg để phát cho khách dùng Mac.
+#
+#     ./tools/build-dmg.sh 2026-10-12.2
+#
+# **Chỉ chạy được trên macOS.** `hdiutil` là công cụ duy nhất tạo ra được một
+# file .dmg đúng chuẩn, và nó không có bản cho Windows hay Linux. Trên Windows
+# thì dùng GitHub Actions - xem .github/workflows/build-dmg.yml, nó chạy đúng
+# script này trên một máy Mac thật.
+#
+# Script này nằm trong kho mã nguồn chứ không phải thứ phát cho khách, nên nó
+# tự loại mình ra khỏi cái .dmg mà nó tạo (xem DANH SÁCH LOẠI TRỪ bên dưới).
+#
+# Cái .dmg chứa **thư mục**, không phải một ứng dụng .app. Khách mở ra, thấy
+# thư mục AutoReel với ba file .command nhấp đôi được. Đó không phải cách đóng
+# gói quen thuộc của Mac (kéo vào Applications), nhưng nó là cách trung thực:
+# app này chạy bằng Docker, không có gì để "cài vào Applications" cả.
+
+set -eu
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$HERE"
+
+VERSION="${1:-}"
+if [ -z "$VERSION" ]; then
+    echo "Cần một version: ./tools/build-dmg.sh 2026-10-12.2" >&2
+    exit 1
+fi
+
+if ! command -v hdiutil >/dev/null 2>&1; then
+    echo "LỖI: không có hdiutil - script này chỉ chạy trên macOS." >&2
+    echo "      Trên Windows dùng GitHub Actions: .github/workflows/build-dmg.yml" >&2
+    exit 1
+fi
+
+OUT="$HERE/dist"
+STAGE="$OUT/AutoReel"
+DMG="$OUT/AutoReel-$VERSION.dmg"
+
+# ------------------------------------------------------------ danh sách loại trừ
+#
+# Những thứ **không** được vào trong .dmg, và mỗi dòng có một lý do:
+#
+#   data/            dữ liệu chạy của máy này - video, database, model. Hàng GB,
+#                    và là dữ liệu riêng của người đóng gói. Có vào đó là vừa
+#                    nặng vừa rò rỉ.
+#   .env             cấu hình thật của máy này, kèm key. Không bao giờ phát.
+#   .chrome-shopee/  hồ sơ Chrome đã đăng nhập Shopee.
+#   tools/           chính script này, và những thứ chỉ có nghĩa trên máy phát
+#                    triển. Khách không có việc gì với chúng.
+#   .github/         như trên.
+#   .git/            lịch sử của kho mã nguồn.
+#   dist/            đầu ra của lần đóng gói trước - nếu không loại ra thì mỗi
+#                    lần build lại nhét cái .dmg cũ vào trong cái .dmg mới.
+#   *.zip            file nén tải về, không phải nội dung.
+EXCLUDES=(
+    --exclude "data"
+    --exclude ".env"
+    --exclude ".chrome-shopee"
+    --exclude "tools"
+    --exclude ".github"
+    --exclude ".git"
+    --exclude "dist"
+    --exclude ".DS_Store"
+)
+
+echo "==> Dọn đầu ra cũ"
+rm -rf "$STAGE" "$DMG"
+mkdir -p "$STAGE"
+
+echo "==> Chép nội dung thư mục khách hàng"
+# rsync chứ không cp: nó nhận danh sách loại trừ, và nó giữ quyền chạy của file
+# - điều mà cả .command lẫn install.sh đều cần.
+rsync -a "${EXCLUDES[@]}" --exclude "*.zip" ./ "$STAGE/"
+
+# Quyền chạy, đặt lại lần nữa cho chắc.
+#
+# Chúng đã đúng trong git (chế độ 100755 được lưu trong kho), nhưng một bản
+# checkout sai cấu hình - hoặc một lần chép tay qua Windows - có thể làm mất
+# bit đó, và triệu chứng là "The file could not be executed" khi khách nhấp
+# đôi. Đặt lại ở đây thì không phải đoán.
+chmod +x "$STAGE"/*.sh "$STAGE"/*.command 2>/dev/null || true
+
+echo "==> Kiểm tra những gì sắp đóng gói"
+missing=0
+for required in install.sh start.sh docker-compose.yml "Cài đặt.command"; do
+    if [ ! -e "$STAGE/$required" ]; then
+        echo "    THIẾU: $required"
+        missing=$((missing + 1))
+    fi
+done
+if [ "$missing" -gt 0 ]; then
+    echo "LỖI: thiếu $missing file bắt buộc - .dmg sẽ không dùng được." >&2
+    exit 1
+fi
+if [ -e "$STAGE/.env" ] || [ -d "$STAGE/data" ]; then
+    echo "LỖI: .env hoặc data/ lọt vào bản đóng gói. Dừng lại." >&2
+    exit 1
+fi
+echo "    OK - $(find "$STAGE" -type f | wc -l | tr -d ' ') file, $(du -sh "$STAGE" | cut -f1)"
+
+echo "==> Tạo .dmg"
+# UDZO = nén, chỉ đọc. Đúng cho một thứ để tải về.
+# -volname là tên hiện ra trên Desktop khi khách mở file.
+hdiutil create \
+    -volname "AutoReel" \
+    -srcfolder "$STAGE" \
+    -ov \
+    -format UDZO \
+    "$DMG" >/dev/null
+
+rm -rf "$STAGE"
+
+SIZE="$(du -h "$DMG" | cut -f1)"
+HASH="$(shasum -a 256 "$DMG" | cut -d' ' -f1)"
+
+echo
+echo "  $DMG"
+echo "  $SIZE   SHA256 $HASH"
+echo
+echo "  Đăng kèm release trên linhdev/autoreel-releases:"
+echo "    gh release upload $VERSION \"$DMG\" --repo linhdev/autoreel-releases"
+echo

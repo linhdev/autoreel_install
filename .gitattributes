@@ -10,3 +10,15 @@
 # The .bat files are the other way round on purpose and are left alone:
 # cmd.exe expects CRLF.
 *.sh  text eol=lf
+
+# .command files are macOS shell scripts that run when double-clicked in
+# Finder, and they need exactly the same treatment as the .sh files - they are
+# the same thing with a different extension. Left out of the line above, they
+# arrive on a Mac with CRLF endings and die on the shebang, before printing
+# anything: "bad interpreter: /bin/bash^M". The customer sees a Terminal window
+# flash and vanish, which says nothing about what went wrong.
+#
+# This is the file that made the first .command files possible to ship: without
+# it the failure only appears on the machine that downloaded the .dmg, which is
+# the one machine nobody can look at.
+*.command  text eol=lf

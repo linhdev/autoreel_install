@@ -14,7 +14,16 @@ stop.bat  / stop.sh     tắt app (dữ liệu trong ./data giữ nguyên)
 .env.example        bản mẫu cấu hình (install.sh chép thành .env)
 HUONG-DAN-FACEBOOK.md   nối Facebook từng bước (chỉ khi đăng bài lên Page)
 data/               toàn bộ dữ liệu: video, database, log, model (tự sinh ra)
+
+Cài đặt.command          nhấp đôi để cài            (macOS)
+Mở AutoReel.command      nhấp đôi để mở app         (macOS)
+Mở Chrome Shopee.command nhấp đôi để đăng nhập Shopee (macOS)
+tools/              script đóng gói .dmg — chỉ máy phát triển
 ```
+
+Ba file `.command` chỉ là cách nhấp đôi để chạy `install.sh`, `start.sh` và
+`open-chrome.sh` — chúng không làm gì thêm. Máy Windows dùng `start.bat` và
+`open-chrome.bat` như cũ.
 
 Trong đây **không có** script đẩy image: việc đó chỉ có nghĩa trên máy phát
 triển, và hai script ấy nằm trong kho mã nguồn — xem mục cuối file.
@@ -32,8 +41,22 @@ triển, và hai script ấy nằm trong kho mã nguồn — xem mục cuối fi
 **Windows:** cài **Git for Windows** (<https://git-scm.com/download/win>), rồi
 nhấp phải trong thư mục này → **Open Git Bash here** → `./install.sh`.
 
-**macOS:** mở **Terminal**, `cd` vào thư mục này rồi `./install.sh`. Không cần
-cài gì trước — script dùng Homebrew nếu có, và tải thẳng từ Google nếu không.
+**macOS:** mở file **`AutoReel.dmg`**, kéo thư mục `AutoReel` ra Desktop (hoặc
+Applications), rồi **nhấp phải** vào **`Cài đặt.command`** → **Mở**.
+
+> **Lần đầu phải nhấp phải → Mở, không phải nhấp đôi.** macOS chặn mọi thứ vừa
+> tải về cho tới khi bạn xác nhận một lần. Nhấp đôi sẽ hiện *"không mở được vì
+> từ nhà phát triển không xác định"*. Nhấp phải → **Mở** → **Mở** là qua được,
+> và chỉ cần làm một lần: chính file đó gỡ chặn cho cả thư mục, nên
+> `Mở AutoReel.command` và `Mở Chrome Shopee.command` sau đó nhấp đôi bình
+> thường.
+>
+> Đừng chạy file trực tiếp từ trong file nén `.zip` — hãy kéo cả thư mục ra
+> trước. Chạy từ trong file nén thì macOS không giải nén được những gì cần thiết.
+
+Cách cũ, nếu bạn quen Terminal — mở **Terminal**, `cd` vào thư mục này rồi
+`./install.sh`. Không cần cài gì trước: script dùng Homebrew nếu có, và tải
+thẳng từ Google nếu không.
 
 > Nếu Terminal báo `permission denied`: thư mục vừa được chép từ nơi khác tới
 > (zip, USB) nên mất quyền chạy. Gõ `chmod +x *.sh` rồi chạy lại.
@@ -217,6 +240,29 @@ container cũng không mất:
 Chạy `./install.sh check` để có bảng tổng kết tình trạng hiện tại.
 
 ## Dành cho máy phát triển
+
+### Đóng gói bộ cài Mac (.dmg)
+
+```bash
+./tools/build-dmg.sh 2026-10-12.2      # chỉ chạy được trên macOS
+```
+
+Trên Windows thì chạy workflow **Build macOS .dmg** trong tab Actions của repo
+này — GitHub cho thuê một máy Mac thật để chạy đúng script đó. Điền version vào
+ô nhập, bấm Run.
+
+`.dmg` không chứa mã máy nào, chỉ có script và file compose, nên **một file dùng
+được cho cả Mac Intel lẫn Apple Silicon**. Kiến trúc chỉ thành vấn đề ở image
+Docker, và image có sẵn cả hai bản — `docker pull` tự lấy đúng bản.
+
+Script tự loại `data/`, `.env`, `.chrome-shopee/`, `tools/`, `.github/`, `.git/`
+và `dist/` ra khỏi bản đóng gói, rồi **từ chối đóng** nếu phát hiện `.env` hoặc
+`data/` lọt vào. Workflow kiểm thêm ba thứ nữa sau khi tạo file: `.dmg` gắn vào
+được, các script còn quyền chạy, và **không file nào có ký tự CR** — một script
+bash có CRLF chết ngay ở dòng shebang và khách chỉ thấy cửa sổ Terminal loé lên
+rồi tắt.
+
+### Đẩy image
 
 **Đẩy image là việc của kho mã nguồn, không phải của thư mục này** — hai script
 đó nằm ở `tools/` trong kho (`tools/publish-images.sh` và
