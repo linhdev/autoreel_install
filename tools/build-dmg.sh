@@ -63,6 +63,10 @@ DMG="$OUT/AutoReel-$VERSION.dmg"
 #   .git/            lịch sử của kho mã nguồn.
 #   dist/            đầu ra của lần đóng gói trước - nếu không loại ra thì mỗi
 #                    lần build lại nhét cái .dmg cũ vào trong cái .dmg mới.
+#   logs/            log của trình quản lý, sinh ra khi app chạy. Trên máy đóng
+#                    gói thì đây là dấu vết của chính lượt thử nghiệm vừa rồi -
+#                    và nó đã lọt vào một bản .dmg một lần, mang theo đường dẫn
+#                    thư mục của máy build.
 #   *.zip            file nén tải về, không phải nội dung.
 EXCLUDES=(
     --exclude "data"
@@ -72,6 +76,7 @@ EXCLUDES=(
     --exclude ".github"
     --exclude ".git"
     --exclude "dist"
+    --exclude "logs"
     --exclude ".DS_Store"
 )
 
@@ -108,8 +113,8 @@ if [ "$missing" -gt 0 ]; then
     echo "LỖI: thiếu $missing file bắt buộc - .dmg sẽ không dùng được." >&2
     exit 1
 fi
-if [ -e "$STAGE/.env" ] || [ -d "$STAGE/data" ]; then
-    echo "LỖI: .env hoặc data/ lọt vào bản đóng gói. Dừng lại." >&2
+if [ -e "$STAGE/.env" ] || [ -d "$STAGE/data" ] || [ -d "$STAGE/logs" ]; then
+    echo "LỖI: .env, data/ hoặc logs/ lọt vào bản đóng gói. Dừng lại." >&2
     exit 1
 fi
 echo "    OK - $(find "$STAGE" -type f | wc -l | tr -d ' ') file, $(du -sh "$STAGE" | cut -f1)"
