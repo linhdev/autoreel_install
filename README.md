@@ -109,6 +109,14 @@ lấy đúng bản cho máy:
 cảnh báo nếu vì lý do gì đó phải chạy giả lập — khi đó whisper và bước render
 chậm hơn nhiều lần).
 
+**Một khác biệt trên Apple Silicon, nói trước cho khỏi mất thời gian.** Phần
+đăng bài lên Shopee cần một chiếc điện thoại Android ghép với máy tính. Việc
+ghép đôi không dây (`adb pair`) chỉ có ở bản `adb` mới, mà Google **không phát
+hành bản `adb` nào cho Linux arm64** — nên image arm64 dùng `adb` của Debian,
+bản này chưa có lệnh đó. Mọi thứ còn lại của đường điện thoại vẫn chạy. Cách
+ghép: cắm cáp USB một lần, hoặc ghép đôi trên một máy Windows/Intel rồi dùng
+tiếp trên máy Mac. Máy Windows và Mac Intel không dính gì.
+
 ## Sau khi cài: năm bước
 
 ### 1. Đăng nhập Shopee (để đọc link sản phẩm và đăng bài)
