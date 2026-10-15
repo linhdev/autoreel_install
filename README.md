@@ -253,9 +253,13 @@ Muốn ghim đúng một bản (để mọi máy khách hàng chạy giống nha
 `.env`:
 
 ```
-SHORTGPT_IMAGE=ghcr.io/linhdev/autoreel-engine:2026-10-12.2
-MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-12.2
+SHORTGPT_IMAGE=ghcr.io/linhdev/autoreel-engine:2026-10-15.1
+MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-15.1
 ```
+
+Hai dòng trên phải **cùng một tag**, và tag đó là bản mới nhất đã đẩy lên ghcr —
+`2026-10-15.1` tính đến hôm nay. Không ghim thì compose lấy `:latest`, và máy
+khách nhận bản mới ngay lần khởi động kế tiếp.
 
 > **Vì sao `start` phải tự kiểm tra.** `docker compose up -d` một mình chỉ dùng
 > image đã nằm sẵn trên máy. Một bản cài đã tải image về sẽ giữ nguyên bản đó
