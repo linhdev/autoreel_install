@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install ShortGPT on a Windows machine, from the images on ghcr.
+# Install AutoReel on a Windows machine, from the images on ghcr.
 #
 # Run it from **Git Bash**, which comes with Git for Windows:
 #
@@ -462,7 +462,7 @@ seed_public() {
         return
     fi
     local image
-    image="$(env_value SHORTGPT_IMAGE 'ghcr.io/linhdev/shortgpt:latest')"
+    image="$(env_value SHORTGPT_IMAGE 'ghcr.io/linhdev/autoreel-engine:latest')"
     docker image inspect "$image" >/dev/null 2>&1 || {
         warn "Chưa có image $image - chạy lại script này sau khi tải image xong."
         return
@@ -482,14 +482,14 @@ seed_public() {
     if [ "$PLATFORM" = "windows" ]; then
         target="$(cygpath -w "$target" 2>/dev/null || printf '%s' "$target")"
     fi
-    docker rm -f shortgpt-seed >/dev/null 2>&1
-    docker create --name shortgpt-seed "$image" >/dev/null 2>&1 && {
-        if docker cp shortgpt-seed:/app/public/. "$target" >/dev/null 2>&1; then
+    docker rm -f autoreel-engine-seed >/dev/null 2>&1
+    docker create --name autoreel-engine-seed "$image" >/dev/null 2>&1 && {
+        if docker cp autoreel-engine-seed:/app/public/. "$target" >/dev/null 2>&1; then
             ok "Đã chép tài nguyên từ image ra ./data/public"
         else
             warn "Không chép được tài nguyên từ image (thư mục ./data/public để trống - chạy lại script này sẽ thử lại)"
         fi
-        docker rm -f shortgpt-seed >/dev/null 2>&1
+        docker rm -f autoreel-engine-seed >/dev/null 2>&1
     }
 }
 
@@ -523,7 +523,7 @@ pull_images() {
     # which is a support call, not a `docker compose pull`. The output is
     # still kept, because the sentence below is built from what it said.
     local output status progress
-    progress="$(mktemp -t shortgpt-pull-XXXXXX)"
+    progress="$(mktemp -t autoreel-engine-pull-XXXXXX)"
     compose pull 2>&1 | tee "$progress"
     status="${PIPESTATUS[0]}"
     output="$(cat "$progress")"
@@ -536,7 +536,7 @@ pull_images() {
         # under emulation, and that is worth saying out loud before somebody
         # wonders why a transcript takes ten minutes.
         local image arch machine want
-        image="$(env_value SHORTGPT_IMAGE 'ghcr.io/linhdev/shortgpt:latest')"
+        image="$(env_value SHORTGPT_IMAGE 'ghcr.io/linhdev/autoreel-engine:latest')"
         arch="$(docker image inspect "$image" --format '{{.Os}}/{{.Architecture}}' 2>/dev/null || true)"
         machine="$(uname -m)"
         case "$machine" in
@@ -569,7 +569,7 @@ start_containers() {
         return
     fi
 
-    # A `shortgpt` service in *this* compose project that is already running
+    # A `autoreel-engine` service in *this* compose project that is already running
     # some other image is the machine this was developed on - there it is built
     # from the checkout with the source mounted over it, and `docker compose up
     # -d` here would replace it with the published image, silently and for
@@ -579,15 +579,15 @@ start_containers() {
     # Asked of compose, by service, not of docker by container name. Measured
     # 2026-10-04: with the name, a copy of this folder running under its own
     # project name refused to start because the *development* container
-    # happened to be called `shortgpt` - a guard against one accident that
+    # happened to be called `autoreel-engine` - a guard against one accident that
     # caused another.
     local existing id wanted
-    id="$(compose ps -q shortgpt 2>/dev/null | head -1)"
+    id="$(compose ps -q autoreel-engine 2>/dev/null | head -1)"
     existing="$(docker inspect -f '{{.Config.Image}}' "$id" 2>/dev/null \
                 | tr -d '\r\n' || true)"
-    wanted="$(env_value SHORTGPT_IMAGE 'ghcr.io/linhdev/shortgpt:latest')"
+    wanted="$(env_value SHORTGPT_IMAGE 'ghcr.io/linhdev/autoreel-engine:latest')"
     if [ -n "$existing" ] && [ "$existing" != "$wanted" ]; then
-        bad "Đang có container tên 'shortgpt' chạy image khác ($existing). Đây có thể là máy phát triển - thư mục này dành cho máy khách hàng, chạy ở đây sẽ thay thế container đó."
+        bad "Đang có container tên 'autoreel-engine' chạy image khác ($existing). Đây có thể là máy phát triển - thư mục này dành cho máy khách hàng, chạy ở đây sẽ thay thế container đó."
         return
     fi
 
@@ -617,7 +617,7 @@ wait_for_app() {
         waited=$((waited + 5))
         [ $((waited % 60)) -eq 0 ] && dim "vẫn đang đợi... (${waited}s)"
     done
-    bad "App không trả lời sau 5 phút. Xem log: docker compose logs --tail 100 shortgpt"
+    bad "App không trả lời sau 5 phút. Xem log: docker compose logs --tail 100 autoreel-engine"
 }
 
 check_containers() {
@@ -627,7 +627,7 @@ check_containers() {
     # and it keeps working when the containers are named something else - which
     # is what happens on a machine that already runs a copy of this stack.
     local service id state
-    for service in shortgpt mpt-api mpt-webui; do
+    for service in autoreel-engine mpt-api mpt-webui; do
         id="$(compose ps -q "$service" 2>/dev/null | head -1)"
         state="$(docker inspect -f '{{.State.Status}}' "$id" 2>/dev/null \
                  | tr -d '\r\n' || true)"
@@ -640,7 +640,7 @@ check_containers() {
     # The two things the app needs from *this* machine, asked from inside the
     # container - which is where the app will ask them from.
     local app answer
-    app="$(compose ps -q shortgpt 2>/dev/null | head -1)"
+    app="$(compose ps -q autoreel-engine 2>/dev/null | head -1)"
     [ -n "$app" ] || { warn "Không thấy container của app - bỏ qua phần kiểm tra kết nối"; return; }
     answer="$(docker exec "$app" python -c "
 import socket
@@ -721,7 +721,7 @@ ${BOLD}Còn bốn việc cần người làm - việc 3 chỉ khi đăng bài l�
   Mở app:  ${BOLD}http://localhost:$(app_port)${OFF}   (hoặc $how_start)
 
   Nhật ký khi có trục trặc:
-      docker compose logs --tail 100 shortgpt     # log của app
+      docker compose logs --tail 100 autoreel-engine     # log của app
       ./data/logs/shopee/...                      # bằng chứng từng lượt đăng bài
 EOF
 
@@ -738,7 +738,7 @@ EOF
 
 # ------------------------------------------------------------------------ main
 
-printf '%s\n' "${BOLD}ShortGPT - cài đặt${OFF}"
+printf '%s\n' "${BOLD}AutoReel - cài đặt${OFF}"
 dim "$(date '+%Y-%m-%d %H:%M')  |  $HERE"
 
 check_shell

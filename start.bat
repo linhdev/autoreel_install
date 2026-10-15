@@ -1,5 +1,5 @@
 @echo off
-REM Khoi dong ShortGPT va mo giao dien.
+REM Khoi dong AutoReel va mo giao dien.
 REM
 REM Chay lai duoc nhieu lan: compose chi dung lai nhung container nao dang thieu.
 REM Lan dau tien thi nen chay install.sh truoc (no cai Docker, adb, Chrome).
@@ -35,11 +35,11 @@ if errorlevel 1 (
   echo   Da co ban moi nhat.
 )
 
-echo   Dang khoi dong ShortGPT...
+echo   Dang khoi dong AutoReel...
 docker compose up -d
 if errorlevel 1 (
   echo.
-  echo   Khong khoi dong duoc. Xem log:  docker compose logs --tail 50 shortgpt
+  echo   Khong khoi dong duoc. Xem log:  docker compose logs --tail 50 autoreel-engine
   pause
   exit /b 1
 )
@@ -51,7 +51,7 @@ curl -s -o nul --max-time 3 http://localhost:%PORT%/ && goto ready
 set /a tries+=1
 if %tries% GEQ 30 (
   echo.
-  echo   App chua tra loi sau 90 giay. Xem log:  docker compose logs --tail 50 shortgpt
+  echo   App chua tra loi sau 90 giay. Xem log:  docker compose logs --tail 50 autoreel-engine
   pause
   exit /b 1
 )

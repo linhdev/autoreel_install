@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Khởi động ShortGPT và mở giao diện. Bản macOS của start.bat.
+# Khởi động AutoReel và mở giao diện. Bản macOS của start.bat.
 #
 # Chạy lại được nhiều lần: compose chỉ dựng lại những container còn thiếu.
 # Lần đầu thì nên chạy ./install.sh trước (nó cài Docker, adb, Chrome).
@@ -34,9 +34,9 @@ else
     echo "  ! Không kiểm tra được bản mới (mất mạng?) - chạy bản đang có trên máy."
 fi
 
-echo "  Đang khởi động ShortGPT..."
+echo "  Đang khởi động AutoReel..."
 docker compose up -d || {
-    echo "  Không khởi động được. Xem:  docker compose logs --tail 50 shortgpt"
+    echo "  Không khởi động được. Xem:  docker compose logs --tail 50 autoreel-engine"
     exit 1
 }
 
@@ -52,5 +52,5 @@ while [ "$waited" -lt 90 ]; do
     waited=$((waited + 3))
 done
 
-echo "  App chưa trả lời sau 90 giây. Xem:  docker compose logs --tail 50 shortgpt"
+echo "  App chưa trả lời sau 90 giây. Xem:  docker compose logs --tail 50 autoreel-engine"
 exit 1

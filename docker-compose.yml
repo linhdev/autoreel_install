@@ -1,4 +1,4 @@
-# ShortGPT — bản cài trên máy khách hàng.
+# AutoReel — bản cài trên máy khách hàng.
 #
 # **Khác bản trong kho mã nguồn ở đúng một điểm, và đó là điểm quan trọng
 # nhất: file này không mount mã nguồn.** Mọi thứ đã nằm trong image kéo từ
@@ -12,17 +12,17 @@
 #
 #   docker compose pull          # lấy image mới
 #   docker compose up -d         # chạy
-#   docker compose logs -f shortgpt
+#   docker compose logs -f autoreel-engine
 #
 # `install.sh` trong cùng thư mục này làm hết những việc đó, kèm phần cài đặt
 # môi trường - hãy dùng nó thay vì gõ tay.
 
-name: shortgpt
+name: autoreel-engine
 
 services:
-  shortgpt:
-    image: ${SHORTGPT_IMAGE:-ghcr.io/linhdev/shortgpt:latest}
-    container_name: shortgpt
+  autoreel-engine:
+    image: ${SHORTGPT_IMAGE:-ghcr.io/linhdev/autoreel-engine:latest}
+    container_name: autoreel-engine
     # Để container nối được tới những thứ chạy trên Windows: adb server (cổng
     # 5037) và cửa sổ Chrome đã đăng nhập Shopee (cổng 47831). Không có dòng
     # này thì `host.docker.internal` không phân giải được, và lỗi hiện ra như

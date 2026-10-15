@@ -1,4 +1,4 @@
-# ShortGPT — bộ cài cho máy khách hàng
+# AutoReel — bộ cài cho máy khách hàng
 
 Thư mục này là tất cả những gì cần mang sang máy khác. Không cần mã nguồn, không
 cần Git, không cần Python: app nằm trong image trên ghcr, `install.sh` lo phần
@@ -206,6 +206,25 @@ token Page lấy theo cách đó **không hết hạn** (khỏi phải nối l�
 Muốn bài đăng **công khai** (không chỉ mình bạn thấy) thì sau đó chuyển app
 Meta sang **Live** — cũng nằm trong file hướng dẫn.
 
+## Cài xong rồi thì làm gì
+
+Mở app lên là thấy một sidebar dài. Mỗi màn có một trang hướng dẫn riêng, chụp
+ảnh thật từ chính app này:
+
+**<https://autoreelvn.com/tai-lieu/>** — bản tiếng Anh ở `/en/docs/`.
+
+Không cần đọc hết. Ba trang đáng xem trước, tuỳ bạn định làm gì:
+
+- **Chèn chữ & logo** — 13 template dựng sẵn (tiêu đề phim, bảng giá, phụ đề,
+  bán hàng…). Chọn một cái, gõ chữ, xong; không phải tự canh vị trí hay cỡ chữ.
+- **Cắt highlight** — thả một video dài vào, app tìm chỗ đáng cắt và trả về vài
+  clip ngắn.
+- **Video ngắn** — gõ một câu chủ đề, app viết kịch bản, đọc thành tiếng và dựng
+  video.
+
+Còn lại cứ mở từng màn mà xem: ô nào cũng có chữ giải thích ngay dưới, và mọi
+màn đều có nút **Dừng** nếu bạn muốn dừng giữa chừng.
+
 ## Cập nhật
 
 **`start.bat` / `./start.sh` tự làm việc này.** Mỗi lần khởi động, nó kiểm tra
@@ -226,7 +245,7 @@ Muốn ghim đúng một bản (để mọi máy khách hàng chạy giống nha
 `.env`:
 
 ```
-SHORTGPT_IMAGE=ghcr.io/linhdev/shortgpt:2026-10-12.2
+SHORTGPT_IMAGE=ghcr.io/linhdev/autoreel-engine:2026-10-12.2
 MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-12.2
 ```
 
@@ -255,7 +274,7 @@ container cũng không mất:
 
 | Hiện tượng | Xem gì |
 |---|---|
-| App không mở được | `docker compose logs --tail 100 shortgpt` |
+| App không mở được | `docker compose logs --tail 100 autoreel-engine` |
 | Nút Docker báo lỗi | Docker Desktop đã chạy chưa (biểu tượng dưới khay hệ thống) |
 | Màn Shopee báo bị chặn / không đọc được link | Cửa sổ `open-chrome.bat` đã mở và đã đăng nhập chưa |
 | Không thấy điện thoại | `./platform-tools/adb devices` (`adb.exe` trên Windows) — phải thấy trạng thái `device`, không phải `unauthorized` |
@@ -335,5 +354,5 @@ máy khách phải `docker login`.
 Kiểm tra một tag đã có đủ hai kiến trúc chưa:
 
 ```bash
-docker buildx imagetools inspect ghcr.io/linhdev/shortgpt:latest
+docker buildx imagetools inspect ghcr.io/linhdev/autoreel-engine:latest
 ```

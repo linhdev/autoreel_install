@@ -15,7 +15,7 @@ trình duyệt về; nó không nhận, không lưu, không gửi mã đăng nh�
 
 1. Mở `https://developers.facebook.com/apps/` → đăng nhập Facebook.
 2. **Create app** → chọn loại **Other** (hoặc **Business**, tuỳ giao diện) →
-   đặt tên bất kỳ, ví dụ `ShortGPT của <tên bạn>` → **Create app**.
+   đặt tên bất kỳ, ví dụ `AutoReel của <tên bạn>` → **Create app**.
 3. Vào **App Settings → Basic**, ghi lại hai thứ (App Secret phải bấm **Show**):
    - **App ID** — dãy số, ví dụ `1114892434216441`
    - **App Secret** — dãy chữ và số dài
