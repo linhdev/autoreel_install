@@ -12,7 +12,9 @@ open-chrome.sh      như trên                              (macOS)
 start.bat / start.sh    khởi động app + mở giao diện
 stop.bat  / stop.sh     tắt app (dữ liệu trong ./data giữ nguyên)
 .env.example        bản mẫu cấu hình (install.sh chép thành .env)
-HUONG-DAN-FACEBOOK.md   nối Facebook từng bước (chỉ khi đăng bài lên Page)
+HUONG-DAN-FACEBOOK.md     nối Facebook từng bước (chỉ khi đăng bài lên Page)
+HUONG-DAN-SU-DUNG.md      hướng dẫn sử dụng: khoá, từng màn hình, chỗ dễ mắc
+HUONG-DAN-AUTOREEL.html   như trên, bản HTML có mục lục — mở bằng trình duyệt
 data/               toàn bộ dữ liệu: video, database, log, model (tự sinh ra)
 
 Cài đặt.command          nhấp đôi để cài            (macOS)
@@ -221,6 +223,11 @@ Mở app lên là thấy một sidebar dài. Mỗi màn có một trang hướng
 
 **<https://autoreelvn.com/tai-lieu/>** — bản tiếng Anh ở `/en/docs/`.
 
+Bản **offline** nằm ngay trong thư mục này, đọc được khi không có mạng:
+[`HUONG-DAN-SU-DUNG.md`](HUONG-DAN-SU-DUNG.md) — hoặc
+[`HUONG-DAN-AUTOREEL.html`](HUONG-DAN-AUTOREEL.html) mở bằng trình duyệt, có mục
+lục bấm được và dễ đọc hơn.
+
 Không cần đọc hết. Ba trang đáng xem trước, tuỳ bạn định làm gì:
 
 - **Chèn chữ & logo** — 13 template dựng sẵn (tiêu đề phim, bảng giá, phụ đề,
@@ -253,12 +260,12 @@ Muốn ghim đúng một bản (để mọi máy khách hàng chạy giống nha
 `.env`:
 
 ```
-SHORTGPT_IMAGE=ghcr.io/linhdev/autoreel-engine:2026-10-15.2
-MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-15.2
+SHORTGPT_IMAGE=ghcr.io/linhdev/autoreel-engine:2026-10-15.3
+MPT_IMAGE=ghcr.io/linhdev/moneyprinterturbo:2026-10-15.3
 ```
 
 Hai dòng trên phải **cùng một tag**, và tag đó là bản mới nhất đã đẩy lên ghcr —
-`2026-10-15.2` tính đến hôm nay. Không ghim thì compose lấy `:latest`, và máy
+`2026-10-15.3` tính đến hôm nay. Không ghim thì compose lấy `:latest`, và máy
 khách nhận bản mới ngay lần khởi động kế tiếp.
 
 > **Vì sao `start` phải tự kiểm tra.** `docker compose up -d` một mình chỉ dùng

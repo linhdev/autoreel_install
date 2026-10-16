@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hướng dẫn AutoReel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* ── Tokens ──────────────────────────────────────────────────────────────
+   Light is the bare `:root`; the dark palette is redefined twice so an
+   explicit choice wins over the OS setting in both directions. Nothing
+   below sets a colour directly inside a media or [data-theme] block. */
+:root {
+    --bg:        #f7f8fb;
+    --surface:   #ffffff;
+    --surface-2: #f1f3f8;
+    --text:      #15171d;
+    --muted:     #59616f;
+    --faint:     #8b93a3;
+    --border:    #e2e5ec;
+    --border-2:  #cdd2dd;
+    --accent:    #4f46e5;
+    --accent-ink:#ffffff;
+    --accent-soft:#eef0fe;
+    --warn:      #b45309;
+    --warn-soft: #fdf6e7;
+    --warn-line: #eab308;
+    --danger:    #b91c1c;
+    --danger-soft:#fdf0f0;
+    --danger-line:#ef4444;
+    --ok:        #047857;
+    --ok-soft:   #ecfdf5;
+    --ok-line:   #10b981;
+    --code-bg:   #f4f5f9;
+    --shadow:    0 1px 2px rgba(16, 24, 40, .05), 0 8px 24px -12px rgba(16, 24, 40, .12);
+    color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg:        #0d0f15;
+        --surface:   #151821;
+        --surface-2: #1c202b;
+        --text:      #e7e9ef;
+        --muted:     #9aa3b4;
+        --faint:     #6e7789;
+        --border:    #252a37;
+        --border-2:  #333a4a;
+        --accent:    #a5b4fc;
+        --accent-ink:#1e1b4b;
+        --accent-soft:#1e1f38;
+        --warn:      #fcd34d;
+        --warn-soft: #2a2415;
+        --warn-line: #b45309;
+        --danger:    #fca5a5;
+        --danger-soft:#2c1a1a;
+        --danger-line:#b91c1c;
+        --ok:        #6ee7b7;
+        --ok-soft:   #12261f;
+        --ok-line:   #047857;
+        --code-bg:   #1b1f2a;
+        --shadow:    0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+        color-scheme: dark;
+    }
+}
+:root[data-theme="dark"] {
+    --bg:        #0d0f15;
+    --surface:   #151821;
+    --surface-2: #1c202b;
+    --text:      #e7e9ef;
+    --muted:     #9aa3b4;
+    --faint:     #6e7789;
+    --border:    #252a37;
+    --border-2:  #333a4a;
+    --accent:    #a5b4fc;
+    --accent-ink:#1e1b4b;
+    --accent-soft:#1e1f38;
+    --warn:      #fcd34d;
+    --warn-soft: #2a2415;
+    --warn-line: #b45309;
+    --danger:    #fca5a5;
+    --danger-soft:#2c1a1a;
+    --danger-line:#b91c1c;
+    --ok:        #6ee7b7;
+    --ok-soft:   #12261f;
+    --ok-line:   #047857;
+    --code-bg:   #1b1f2a;
+    --shadow:    0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+    margin: 0;
+    padding: 0 20px 80px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: clamp(15.5px, 0.28vw + 14.8px, 17.5px);
+    line-height: 1.68;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.25; margin: 0; }
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+code, kbd, pre { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular,
+                 "Cascadia Mono", Consolas, monospace; }
+
+code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: .1em .38em;
+    font-size: .875em;
+    word-break: break-word;
+}
+
+pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: .875em;
+    line-height: 1.6;
+    margin: 0;
+}
+pre code { background: none; border: none; padding: 0; font-size: 1em; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 52px 0; }
+
+/* ── Shell ───────────────────────────────────────────────────────────── */
+.wrap { max-width: 1180px; margin: 0 auto; }
+
+header.top {
+    padding: 34px 0 26px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 34px;
+}
+.brandline { display: flex; align-items: center; gap: 13px; flex-wrap: wrap; }
+.mark {
+    width: 42px; height: 42px; flex: 0 0 auto;
+    border-radius: 11px;
+    background: linear-gradient(140deg, #6366f1, #312e81);
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 21px; font-weight: 700;
+    box-shadow: var(--shadow);
+}
+h1 { font-size: clamp(1.5rem, 1.1vw + 1.2rem, 2rem); font-weight: 700; letter-spacing: -.02em; }
+.sub { color: var(--muted); margin: 14px 0 0; max-width: 62ch; }
+.sub strong { color: var(--text); font-weight: 600; }
+
+.layout { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 44px; align-items: start; }
+
+nav.toc {
+    position: sticky; top: 20px;
+    font-size: .9rem;
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+nav.toc p {
+    margin: 0 0 10px;
+    font-size: .72rem; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: var(--faint);
+}
+nav.toc a {
+    display: block;
+    padding: 4px 0;
+    color: var(--muted);
+    text-decoration: none;
+    line-height: 1.4;
+}
+nav.toc a:hover { color: var(--accent); }
+nav.toc a .n { color: var(--faint); font-variant-numeric: tabular-nums; margin-right: 7px; }
+
+main { min-width: 0; }
+
+section { scroll-margin-top: 18px; margin-bottom: 56px; }
+
+h2 {
+    font-size: 1.36rem; font-weight: 700; letter-spacing: -.015em;
+    padding-bottom: 10px; margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+h2 .n { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 10px; }
+h3 { font-size: 1.075rem; font-weight: 600; margin: 34px 0 12px; }
+h4 { font-size: .97rem; font-weight: 600; margin: 24px 0 9px; color: var(--muted); }
+p { margin: 0 0 15px; max-width: 74ch; }
+ul, ol { margin: 0 0 15px; padding-left: 22px; max-width: 74ch; }
+li { margin-bottom: 7px; }
+li > ul, li > ol { margin-top: 7px; margin-bottom: 0; }
+strong { font-weight: 600; }
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+.tablewrap { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--border);
+             border-radius: 11px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .925rem; }
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border);
+         vertical-align: top; }
+thead th {
+    background: var(--surface-2);
+    font-size: .74rem; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted); white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: none; }
+td code, th code { white-space: nowrap; }
+
+/* ── Callouts ────────────────────────────────────────────────────────── */
+.callout {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-2);
+    border-radius: 10px;
+    padding: 15px 18px;
+    margin: 0 0 18px;
+    background: var(--surface);
+}
+.callout > :last-child { margin-bottom: 0; }
+.callout .tag {
+    display: block;
+    font-size: .72rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: 7px;
+    color: var(--faint);
+}
+.callout.trap { border-left-color: var(--danger-line); background: var(--danger-soft); }
+.callout.trap .tag { color: var(--danger); }
+.callout.warn { border-left-color: var(--warn-line); background: var(--warn-soft); }
+.callout.warn .tag { color: var(--warn); }
+.callout.good { border-left-color: var(--ok-line); background: var(--ok-soft); }
+.callout.good .tag { color: var(--ok); }
+
+/* ── Misc ────────────────────────────────────────────────────────────── */
+.pill {
+    display: inline-block;
+    font-size: .74rem; font-weight: 600;
+    padding: 1px 8px; border-radius: 99px;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+.steps { counter-reset: step; list-style: none; padding-left: 0; }
+.steps > li { counter-increment: step; position: relative; padding-left: 34px; margin-bottom: 11px; }
+.steps > li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 2px;
+    width: 22px; height: 22px; border-radius: 6px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: .74rem; font-weight: 700;
+    display: grid; place-items: center;
+}
+footer {
+    margin-top: 64px; padding-top: 22px;
+    border-top: 1px solid var(--border);
+    color: var(--faint); font-size: .85rem;
+}
+
+@media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    nav.toc {
+        position: static; max-height: none;
+        border-left: none; border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 14px 0; margin-bottom: 34px;
+        columns: 2; column-gap: 22px;
+    }
+    nav.toc a { break-inside: avoid; }
+    nav.toc p { column-span: all; }
+}
+@media (max-width: 560px) {
+    body { padding: 0 16px 60px; }
+    nav.toc { columns: 1; }
+    header.top { padding-top: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+    <div class="brandline">
+        <div class="mark" aria-hidden="true">A</div>
+        <h1>Hướng dẫn sử dụng AutoReel</h1>
+    </div>
+    <p class="sub">Viết cho người <strong>dùng</strong> hệ thống: khoá lấy ở đâu, dán vào
+    chỗ nào, mỗi màn hình làm gì, và những chỗ dễ mắc nhất. Phần <strong>cài đặt và
+    kiến trúc</strong> nằm ở <code>README.md</code>.</p>
+</header>
+
+<div class="layout">
+
+<nav class="toc">
+    <p>Nội dung</p>
+    <a href="#gioi-thieu"><span class="n">1</span>Chuyện này là gì</a>
+    <a href="#bat-dau"><span class="n">2</span>Bắt đầu</a>
+    <a href="#khoa"><span class="n">3</span>Khoá và cấu hình</a>
+    <a href="#man-hinh"><span class="n">4</span>Các màn hình</a>
+    <a href="#quy-trinh"><span class="n">5</span>Quy trình mẫu</a>
+    <a href="#su-co"><span class="n">6</span>Khi có trục trặc</a>
+</nav>
+
+<main>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="gioi-thieu">
+<h2><span class="n">1</span>Chuyện này là gì</h2>
+
+<p>Nó lấy một video dài — hoặc chỉ một chủ đề — rồi làm ra video ngắn. Làm xong thì
+đăng thẳng lên Shopee Video và Facebook Reels được luôn, không phải tải về rồi đăng
+tay.</p>
+
+<p>Công việc chia làm bốn nhóm:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Nhóm</th><th>Làm được gì</th><th>Ở màn</th></tr></thead>
+<tbody>
+<tr><td><strong>Làm ra video</strong></td><td>Cắt highlight từ video dài; dựng video từ một chủ đề bằng cảnh quay có sẵn</td><td>Cắt highlight, Video tự động, Video ngắn</td></tr>
+<tr><td><strong>Sửa video có sẵn</strong></td><td>Lồng tiếng sang tiếng Việt; xoá logo và chữ cháy cứng</td><td>Lồng tiếng, Xoá logo</td></tr>
+<tr><td><strong>Bán hàng</strong></td><td>Đọc link sản phẩm, dựng clip, đăng lên Shopee và Facebook</td><td>Link sản phẩm, Shopee, Facebook</td></tr>
+<tr><td><strong>Kho và hệ thống</strong></td><td>Thư viện video, tư liệu dùng lại, nhập danh sách từ kênh, cấu hình</td><td>Thư viện video, Tư liệu, Link từ kênh, Cấu hình</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Tất cả chạy trên máy bạn, ở địa chỉ <code>http://localhost:31415</code>. Chỉ bốn
+thứ sau là buộc phải ra internet: khoá AI (vì câu chữ phải gửi cho nhà cung cấp mô
+hình), cảnh quay stock, video tải từ YouTube/TikTok, và một trong ba engine đọc là
+EdgeTTS. Còn lại — kể cả engine đọc ZeroTTS — không rời khỏi máy.</p>
+
+<div class="callout">
+<span class="tag">Về cái tên</span>
+<p>Sản phẩm tên là <strong>AutoReel</strong>. <strong>ShortGPT</strong> là bộ khung mã
+nguồn mở mà nó dựng lên — bạn sẽ còn gặp cái tên đó trong tên thư mục và tên biến,
+nhưng nó không hiện ở đâu trên màn hình.</p>
+</div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="bat-dau">
+<h2><span class="n">2</span>Bắt đầu</h2>
+
+<p>Bạn cần một máy chạy được <strong>Docker Desktop</strong>. Card đồ hoạ
+<strong>không bắt buộc</strong>: mọi thứ đều có đường chạy trên CPU, chỉ chậm hơn.</p>
+
+<pre><code>cp .env.example .env      # điền khoá vào, hoặc để trống rồi điền sau trong app
+docker compose up -d</code></pre>
+
+<p>Rồi mở <strong><a href="http://localhost:31415">http://localhost:31415</a></strong>.</p>
+
+<p>Lần chạy đầu tiên mất <strong>15–20 phút</strong> để dựng image, và tải thêm hai
+file model. Cả hai chỉ tải một lần cho mỗi máy, lần sau mở là có ngay.</p>
+
+<p><strong>Chưa có khoá nào cũng không sao</strong> — app vẫn mở bình thường. Màn nào
+cần khoá thì nó nói thẳng đang thiếu khoá gì, và bạn dán khoá vào màn
+<strong>Cấu hình</strong> là dùng được ngay, <strong>không phải khởi động lại</strong>.</p>
+
+<div class="callout">
+<span class="tag">Mang sang máy khác</span>
+<p>Đọc <code>CHECKLIST.md</code>. File đó liệt kê những thứ <strong>không</strong> nằm
+trong git — file khoá, cookie, model, phiên đăng nhập Shopee — và cách kiểm tra từng
+tính năng sau khi cài lại.</p>
+</div>
+
+<p>Hai file model đó nằm ở hai chỗ khác nhau, và điều đó quan trọng khi bạn copy thư
+mục project sang máy khác: model <strong>giọng đọc</strong> nằm trong thư mục project
+nên đi theo; model <strong>phiên âm</strong> nằm trong một ổ dữ liệu riêng của Docker
+nên sẽ tải lại ở lần dùng đầu tiên. Lần đầu chạy phiên âm, nó mất 5–15 giây để nạp
+vào bộ nhớ — chậm, nhưng không phải treo.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="khoa">
+<h2><span class="n">3</span>Khoá và cấu hình</h2>
+
+<h3>3.1 Dán khoá vào đâu</h3>
+
+<p>Vào sidebar → nhóm <span class="pill">Ứng dụng</span> → <strong>Cấu hình</strong>.
+Màn này chia làm hai nhóm, và có một nút <strong>lưu</strong> ở cuối.</p>
+
+<p>Nhóm trên là <strong>mô hình AI</strong>: chọn nhà cung cấp, dán khoá vào ô ngay
+dưới, rồi hai ô Base URL và Model — hai ô đó đã điền sẵn đúng cho nhà cung cấp bạn
+vừa chọn, chỉ đổi khi bạn biết mình đang làm gì. Cạnh đó là nút <strong>Kiểm tra kết
+nối</strong>: nó gọi thử một câu bằng <strong>đúng giá trị đang nằm trong ô</strong>,
+chưa cần lưu. Đây là cách phát hiện khoá hỏng trước khi cả một loạt video chết vì nó.</p>
+
+<p>Nhóm dưới là <strong>khoá khác</strong>. Không cái nào bắt buộc — thiếu cái nào thì
+chỉ tính năng dùng cái đó không chạy:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Ô</th><th>Mở khoá cho</th></tr></thead>
+<tbody>
+<tr><td>Khoá AI</td><td>Mọi thứ cần viết chữ: kịch bản video ngắn, dịch video, chú thích đăng bài, trợ lý 🤖</td></tr>
+<tr><td>KHOÁ PEXELS</td><td>Cảnh quay cho Video ngắn và Video tự động</td></tr>
+<tr><td>KHOÁ ELEVENLABS</td><td>Một engine đọc trả tiền, chất lượng cao nhất trong ba engine</td></tr>
+<tr><td>FACEBOOK APP ID và APP SECRET</td><td>Đăng Reels lên Page</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Bấm <strong>lưu</strong> là có hiệu lực ngay. Không phải khởi động lại gì cả — app
+đọc lại cấu hình mỗi lần dùng.</p>
+
+<div class="callout warn">
+<span class="tag">Chỗ dễ bỏ sót</span>
+<p><strong>Khoá Pexels không nằm lại ở đây.</strong> Bấm Lưu là nó được gửi sang bộ máy
+tạo video — một app riêng, chạy riêng, có file cấu hình riêng. Nên nếu bạn quên bấm Lưu
+thì khoá vẫn chưa tới nơi. Dòng chữ ngay dưới ô là <strong>chỗ duy nhất</strong> cho
+biết việc đó đã xảy ra chưa:</p>
+<ul>
+<li><code>AutoReel Engine: đã có khoá Pexels.</code> — xong.</li>
+<li><code>AutoReel Engine: chưa có khoá Pexels — bấm Lưu để gửi sang.</code> — chưa.</li>
+<li><code>AutoReel Engine: không kết nối được.</code> — bộ máy tạo video chưa chạy.</li>
+</ul>
+</div>
+
+<div class="callout trap">
+<span class="tag">Bẫy</span>
+<p><strong>Đừng bấm Lưu từ một ô trống.</strong> Màn này đọc lại khoá đã lưu mỗi lần
+tải trang, nên khoá cũ không hiện thành ô trống. Nhưng nếu bạn <strong>xoá trắng</strong>
+một ô rồi bấm Lưu, nó ghi đè khoá cũ bằng chuỗi rỗng.</p>
+</div>
+
+<h3>3.2 Khoá DeepSeek — thứ bắt buộc</h3>
+
+<p>Đây là khoá quan trọng nhất. Không có nó thì <strong>không màn nào viết được
+chữ</strong>: bấm tạo video ngắn bị chặn ngay kèm câu "Chưa có khoá AI", trợ lý 🤖 báo
+lỗi, và dịch video chết giữa chừng.</p>
+
+<p>DeepSeek <strong>không có gói miễn phí</strong> — nó tính tiền theo lượng chữ. Số dư
+bằng 0 thì khoá không chạy, nên nạp tiền trước.</p>
+
+<ol class="steps">
+<li>Vào <strong><a href="https://platform.deepseek.com">platform.deepseek.com</a></strong>
+và đăng nhập (số điện thoại hoặc WeChat).</li>
+<li>Nạp tiền ở <strong><a href="https://platform.deepseek.com/top_up">platform.deepseek.com/top_up</a></strong>.
+Xem số dư ở mục Usage.</li>
+<li>Vào <strong><a href="https://platform.deepseek.com/api_keys">platform.deepseek.com/api_keys</a></strong>
+→ <strong>Create API key</strong>.</li>
+<li><strong>Chép khoá ngay.</strong> Nó bắt đầu bằng <code>sk-</code> và <strong>chỉ
+hiện đúng một lần</strong> — đóng hộp thoại là không xem lại được, mất thì phải tạo cái
+mới.</li>
+</ol>
+
+<p>Dán vào: Cấu hình → <strong>Nhà cung cấp</strong> = DeepSeek → dán khoá →
+<strong>Kiểm tra kết nối</strong> → <strong>Lưu</strong>.</p>
+
+<div class="callout trap">
+<span class="tag">Bẫy</span>
+<p><strong>Tên khoá đánh lừa, và đây là chỗ dễ hoang mang nhất.</strong></p>
+<p>Khoá DeepSeek được lưu chung một ô với khoá OpenAI — trong file <code>.env</code> nó
+cũng nằm ở biến <code>OPENAI_API_KEY</code>. Không phải lỗi: DeepSeek, OpenAI và Gemini
+nói cùng một kiểu với nhau, nên chúng dùng chung một ô. Nếu bạn mở file ra tìm biến tên
+<code>DEEPSEEK_API_KEY</code> thì <strong>không có biến đó</strong>.</p>
+</div>
+
+<p>Muốn đổi sang nhà cung cấp khác: chọn ở ô <strong>Nhà cung cấp</strong>, ô khoá và
+Base URL/Model tự đổi theo, rồi dán khoá của nhà cung cấp đó vào và lưu.</p>
+
+<h3>3.3 Khoá Pexels — nên có</h3>
+
+<p>Pexels cấp <strong>cảnh quay</strong> cho hai màn dựng video từ chủ đề. Không có khoá
+thì chúng <strong>không báo lỗi</strong> — chỉ trả về video không có cảnh.</p>
+
+<p>Miễn phí, không cần thẻ:</p>
+
+<ol class="steps">
+<li>Tạo tài khoản ở <strong><a href="https://www.pexels.com">pexels.com</a></strong>.</li>
+<li>Vào <strong><a href="https://www.pexels.com/api/">pexels.com/api</a></strong> lấy
+khoá — <strong>cấp ngay lập tức</strong>.</li>
+<li>Mỗi tài khoản chỉ có một khoá, và nó là của riêng bạn.</li>
+</ol>
+
+<p>Gói miễn phí cho <strong>200 lượt gọi mỗi giờ, 20.000 lượt mỗi tháng</strong> — thừa
+sức cho việc này.</p>
+
+<p>Dán vào ô <strong>KHOÁ PEXELS</strong> rồi <strong>Lưu</strong>, và nhớ nhìn dòng
+trạng thái bên dưới để chắc khoá đã được gửi sang.</p>
+
+<div class="callout warn">
+<span class="tag">Giấy phép</span>
+<p><strong>Pexels yêu cầu ghi nguồn.</strong> Khi đăng video có cảnh quay lấy từ đây,
+ghi credit cho tác giả ("Video by … on Pexels"), tối thiểu là "Footage provided by
+Pexels".</p>
+</div>
+
+<div class="callout">
+<span class="tag">Hai nguồn còn lại</span>
+<p><strong>Pixabay và Coverr không nằm ở màn Cấu hình.</strong> Đó là hai nguồn của bộ
+máy tạo video, khai ở webui riêng của nó (<code>http://127.0.0.1:8501</code>). Màn
+<strong>Video tự động</strong> chỉ cho bạn <strong>chọn</strong> dùng nguồn nào, chứ
+không cho nhập khoá.</p>
+</div>
+
+<h3 id="fb">3.4 Facebook App ID và Secret — chỉ khi muốn đăng Reels</h3>
+
+<p>Phần này dài nhất vì nó không phải "dán một cái khoá". Bạn phải tạo một ứng dụng bên
+trong Meta và khai đúng ba quyền. Làm sai thì lỗi <strong>không hiện ra lúc bạn
+làm</strong> — nó hiện ra vài ngày sau, đúng lúc bạn đăng bài.</p>
+
+<h4>Bước 1 — Tạo ứng dụng</h4>
+<ol class="steps">
+<li>Vào <strong><a href="https://developers.facebook.com/apps">developers.facebook.com/apps</a></strong>
+→ <strong>Create app</strong>.</li>
+<li>Chọn loại <strong>Business</strong>.</li>
+<li>Đặt tên, chọn Business portfolio (tạo mới nếu chưa có).</li>
+<li>Vào app vừa tạo → <strong>Settings → Basic</strong>. Ở đây có hai thứ bạn cần:
+    <ul>
+    <li><strong>App ID</strong> — một dãy số, đây là thứ dán vào ô FACEBOOK APP ID.</li>
+    <li><strong>App Secret</strong> — bấm <strong>Show</strong>, đăng nhập lại để xác
+    nhận. Đây là thứ dán vào ô FACEBOOK APP SECRET.</li>
+    </ul>
+</li>
+</ol>
+
+<h4>Bước 2 — Bật đúng ba quyền</h4>
+<p>Vào <strong>Use cases</strong> → chọn <strong>"Manage everything on your Page"</strong>
+→ <strong>Customize</strong> → <strong>Permissions and features</strong>. Với
+<strong>từng</strong> quyền dưới đây, bấm <strong>Add</strong> cho tới khi trạng thái là
+<code>Ready for testing</code>:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Quyền</th><th>Để làm gì</th></tr></thead>
+<tbody>
+<tr><td><code>pages_show_list</code></td><td>Liệt kê được các Page bạn quản lý</td></tr>
+<tr><td><code>pages_read_engagement</code></td><td>Đọc được Page</td></tr>
+<tr><td><code>pages_manage_posts</code></td><td><strong>Đăng bài</strong> — quyền quan trọng nhất</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout trap">
+<span class="tag">Bẫy</span>
+<p><strong>Đây là cái bẫy lớn nhất của cả tài liệu này.</strong></p>
+<p>Meta <strong>không báo lỗi</strong> khi bạn xin một quyền mà app chưa bật. Nó
+<strong>âm thầm bỏ quyền đó ra</strong> khỏi màn hình xin quyền, và chỉ hiện một banner
+cảnh báo mà <strong>chỉ lập trình viên nhìn thấy</strong>. Người dùng vẫn thấy màn hình
+xin quyền "thành công".</p>
+<p>Hậu quả: kết nối trông như đã xong, rồi <strong>vài ngày sau</strong> lúc đăng bài
+mới báo bị từ chối, và không có gì chỉ ra lý do. App có sẵn một câu kiểm tra cho đúng
+ca này — nếu thấy báo thiếu quyền, quay lại bước 2.</p>
+<p>Đừng xin thêm quyền nào khác. Ba quyền trên là đúng những gì tính năng này dùng; xin
+thừa chỉ làm màn hình xin quyền dài ra.</p>
+</div>
+
+<h4>Bước 3 — Khai Redirect URI</h4>
+<p>Vào <strong>Facebook Login → Settings</strong> → mục <strong>Valid OAuth Redirect
+URIs</strong>, thêm <strong>chính xác</strong> chuỗi này:</p>
+
+<pre><code>http://localhost:31415/facebook/callback</code></pre>
+
+<div class="callout warn">
+<span class="tag">Đúng từng ký tự</span>
+<p>Meta so chuỗi <strong>từng ký tự, kể cả số port</strong>. Sai một ký tự là bị từ
+chối, và câu báo lỗi đọc như thể sai đường dẫn chứ không nói gì về port.</p>
+<p>Nếu bạn đổi port của app thì <strong>phải sửa lại cả ở đây</strong>.</p>
+</div>
+
+<h4>Bước 4 — Dán vào hệ thống và kết nối</h4>
+<ol class="steps">
+<li>Cấu hình → dán <strong>App ID</strong> và <strong>App Secret</strong> →
+<strong>Lưu</strong>.</li>
+<li>Vào màn <strong>Facebook</strong> → bấm <strong>Connect Facebook</strong> → đăng
+nhập và cấp quyền.</li>
+<li>Chọn Page muốn đăng.</li>
+</ol>
+
+<div class="callout warn">
+<span class="tag">Ngược với mọi khoá khác</span>
+<p><strong>Riêng chỗ này thì thứ tự ưu tiên ngược lại.</strong> Nếu bạn khai App ID và
+App Secret trong file <code>.env</code> thì <strong>giá trị trong file thắng</strong>
+giá trị nhập ở màn Cấu hình. Với mọi khoá khác thì ngược lại — nhập ở màn Cấu hình mới
+thắng. Đây là chủ ý: khai trong file là một quyết định của cả hệ thống, còn gõ vào ô là
+một lựa chọn tạm thời.</p>
+</div>
+
+<div class="callout">
+<span class="tag">Chế độ Development</span>
+<p>App còn ở chế độ Development thì <strong>chỉ tài khoản có vai trò trong app mới dùng
+được</strong>. Muốn người khác dùng thì phải qua App Review của Meta.</p>
+</div>
+
+<p>Nếu Meta từ chối redirect <code>http://localhost</code>, màn hình còn một đường dự
+phòng: dán code thủ công. Không có gì khác trong luồng thay đổi.</p>
+
+<h3>3.5 ElevenLabs — tuỳ chọn</h3>
+
+<p>Giọng đọc trả tiền, chất lượng cao nhất trong ba engine. Lấy khoá ở
+<strong><a href="https://elevenlabs.io">elevenlabs.io</a></strong> → Profile → API
+Keys.</p>
+
+<p>Không có khoá thì engine này hiện là <strong>"— không khả dụng"</strong> kèm lý do cụ
+thể trong danh sách chọn giọng; <strong>hai engine còn lại vẫn chạy bình thường</strong>.
+Không có gì bị giấu đi.</p>
+
+<p>Ba engine đọc:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Engine</th><th>Tiếng tạo ở đâu</th><th>Cần gì</th></tr></thead>
+<tbody>
+<tr><td>Free EdgeTTS</td><td>Server của Microsoft</td><td>không</td></tr>
+<tr><td>ElevenLabs</td><td>Server của ElevenLabs</td><td>khoá ElevenLabs</td></tr>
+<tr><td>ZeroTTS</td><td><strong>máy bạn</strong></td><td>tải model một lần (~900 MB)</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>ZeroTTS <strong>chỉ nói tiếng Việt</strong>, không cần khoá, <strong>không cần card
+đồ hoạ</strong>, và là engine duy nhất mà văn bản không rời khỏi máy bạn.</p>
+
+<h3>3.6 Cookie cho YouTube, TikTok, Douyin</h3>
+
+<p>Nhiều màn cần tải video từ link. Việc đó cần cookie khi nền tảng chặn:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Nền tảng</th><th>Cookie</th></tr></thead>
+<tbody>
+<tr><td><strong>Douyin</strong></td><td><strong>Bắt buộc</strong> — thiếu là nút không chạy</td></tr>
+<tr><td>YouTube</td><td>Tuỳ chọn, nhưng thường cần</td></tr>
+<tr><td>TikTok</td><td>Tuỳ chọn</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Cách đơn giản nhất: để file cookie vào thư mục <code>cookies/</code> trong project
+(<code>cookies/youtube.txt</code>, <code>cookies/tiktok.txt</code>…), hoặc một file
+<code>cookies/cookies.txt</code> dùng chung.</p>
+
+<h3>3.7 File <code>.env</code> — khi muốn khai ở mức máy</h3>
+
+<p><code>.env</code> là chỗ khai khoá cho cả hệ thống, copy từ <code>.env.example</code>.
+Sửa <code>.env</code> thì phải chạy <code>docker compose up -d</code> để container nhận
+lại — khác với màn Cấu hình, sửa là ăn ngay.</p>
+
+<p>Hầu hết mọi người chỉ cần màn Cấu hình. Nhưng vài thứ chỉ có trong
+<code>.env</code>:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Biến</th><th>Công dụng</th></tr></thead>
+<tbody>
+<tr><td><code>OPENAI_API_KEY</code></td><td>Khoá AI — <strong>chứa khoá DeepSeek</strong></td></tr>
+<tr><td><code>ELEVENLABS_API_KEY</code></td><td>Giọng đọc ElevenLabs</td></tr>
+<tr><td><code>PEXELS_API_KEY</code></td><td>Cảnh quay stock</td></tr>
+<tr><td><code>SHORTGPT_LLM_MODEL</code></td><td>Đổi model, khi muốn cố định cho cả máy</td></tr>
+<tr><td><code>SHORTGPT_VIDEOS_HOST_DIR</code></td><td>Để cột Thư mục trong Thư viện hiện đường dẫn mở được bằng Explorer</td></tr>
+<tr><td><code>SHORTGPT_PROXY</code></td><td>Khi mạng của bạn bị nền tảng chặn</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Chọn nhà cung cấp AI bằng ô <strong>Nhà cung cấp</strong> ở màn Cấu hình, đừng dựa
+vào việc khai biến nào — biến nào có giá trị không quyết định nhà cung cấp nào được
+dùng.</p>
+
+<h3 id="hai-noi">3.8 Khi một khoá nằm ở hai nơi</h3>
+
+<p>Nếu cùng một khoá vừa có trong <code>.env</code> vừa được gõ ở màn Cấu hình, cái nào
+thắng? <strong>Câu trả lời không giống nhau cho mọi khoá</strong>, và đây là chỗ mất
+thời gian nhất khi gỡ rối:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Khoá</th><th>Ai thắng</th></tr></thead>
+<tbody>
+<tr><td>Khoá AI, ElevenLabs, Pexels</td><td><strong>Ô nhập ở màn Cấu hình</strong> thắng <code>.env</code></td></tr>
+<tr><td>Facebook App ID và App Secret</td><td><strong><code>.env</code> thắng</strong> ô nhập ở màn Cấu hình</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Nghĩa là: gõ khoá vào màn Cấu hình mà không thấy ăn, thì kiểm tra xem có giá trị cũ
+nằm trong <code>.env</code> không. Với Facebook thì đó gần như luôn là nguyên nhân.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="man-hinh">
+<h2><span class="n">4</span>Các màn hình</h2>
+
+<p>Ứng dụng mở lên ở màn <strong>Video ngắn</strong>. Sidebar chia 16 màn thành 5 nhóm:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Nhóm</th><th>Màn, theo đúng thứ tự trong sidebar</th></tr></thead>
+<tbody>
+<tr><td><strong>Tạo video</strong></td><td>Video ngắn → Video tự động</td></tr>
+<tr><td><strong>Từ video có sẵn</strong></td><td>Lồng tiếng → Cắt highlight → Xoá logo → Chèn chữ &amp; logo</td></tr>
+<tr><td><strong>Bán hàng</strong></td><td>Affiliate flow → Luồng reup → Luồng review → Link sản phẩm → Shopee → Facebook</td></tr>
+<tr><td><strong>Kho của bạn</strong></td><td>Link từ kênh → Tư liệu → Thư viện video</td></tr>
+<tr><td><strong>Ứng dụng</strong></td><td>Cấu hình</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>4.0 Vỏ ứng dụng</h3>
+
+<p>Ba nút ở thanh ray bên trái, và một công tắc ở đáy sidebar:</p>
+
+<ul>
+<li><strong>☰</strong> — mở/đóng sidebar. Trạng thái được nhớ lại. Trên màn hẹp (768px
+trở xuống) sidebar thành ngăn kéo mở ra trên nội dung.</li>
+<li><strong>🔀</strong> — bảng <strong>Đang chạy</strong>. Đây là sổ theo dõi, không
+phải màn làm việc: mọi lượt đang chạy ở mọi màn — kể cả batch do trợ lý 🤖 khởi động —
+vẽ thành từng bước có trạng thái. Hiện tối đa <strong>6</strong> lượt. Bảng <strong>chỉ
+cập nhật khi tab đang mở</strong> — đóng tab thì nó đứng yên, nhưng công việc vẫn
+chạy.</li>
+<li><strong>🤖</strong> — trợ lý. Mở một panel <em>nổi trên màn đang xem</em>, nên hỏi
+được về chính màn đó mà không phải rời đi. <strong>Enter gửi</strong>,
+<strong>Ctrl/⌘+Enter xuống dòng</strong>. Nút <strong>📎 Đính kèm</strong> chép file vào
+<code>videos/uploads/</code>, và file đó trở thành nguồn cho các màn khác.</li>
+<li><strong>Công tắc ngôn ngữ</strong> ở đáy sidebar — Tiếng Việt / English. Hai tên
+ngôn ngữ <strong>không dịch</strong>, để người lạc vào một ngôn ngữ mình không đọc được
+vẫn tìm được đường ra. Đổi ngôn ngữ không tải lại trang.</li>
+</ul>
+
+<div class="callout warn">
+<span class="tag">Chữ tiếng Anh không tránh được</span>
+<p>Một số chữ <strong>không</strong> đi qua lớp dịch và sẽ vẫn tiếng Anh, kể cả khi bạn
+đang để Tiếng Việt: trạng thái job (<code>queued</code>, <code>running</code>,
+<code>succeeded</code>), dòng tiến trình của engine, lỗi từ backend (phiên âm, xoá logo,
+tải video, Shopee), và <strong>tên ngôn ngữ</strong> trong các ô chọn ngôn ngữ đích. Đó
+là hiện trạng, không phải bạn cấu hình sai.</p>
+</div>
+
+<p>Trợ lý 🤖 <strong>không tự làm gì cả</strong> — nó gọi đúng những công cụ mà các màn
+hình đi, nên việc nó khởi động vẫn hiện trên bảng 🔀. Mỗi lượt được ghi xuống
+<code>logs/agent/&lt;giờ&gt;.jsonl</code>. <strong>Đó là cách kiểm chứng nó nói thật hay
+không</strong>: lượt gọi công cụ thật có <code>"kind": "call"</code> rồi
+<code>"kind": "result"</code>; chỉ có <code>"kind": "say"</code> nghĩa là nó tự viết
+ra.</p>
+
+<div class="callout trap">
+<span class="tag">Không hoàn tác được</span>
+<p><strong>Đăng Shopee và đăng Facebook là thật và không hoàn tác được.</strong> Trợ lý
+được dặn phải nói rõ số video và link rồi chờ bạn xác nhận trước khi gọi — đừng bỏ qua
+bước đó.</p>
+</div>
+
+<h3>4.1 Video ngắn — nhóm <em>Tạo video</em></h3>
+
+<p>Tự viết kịch bản từ một chủ đề, đọc thành tiếng, rồi ghép lên <strong>video nền và
+nhạc nền lấy từ kho Tư liệu</strong>, chèn ảnh minh hoạ, animation đăng ký kênh,
+watermark và ghi phụ đề cháy cứng. Mỗi video còn sinh kèm một file <code>.txt</code>
+chứa tiêu đề và mô tả YouTube.</p>
+
+<ol class="steps">
+<li>Cột <strong>1 · Chủ đề</strong>: chọn số video, kiểu video (Truyện Reddit / Sự kiện
+lịch sử / Sự kiện khoa học / Sự kiện tự chọn), và chủ đề nếu chọn kiểu tự chọn.</li>
+<li>Cột <strong>2 · Giọng đọc</strong>: chọn engine (EdgeTTS miễn phí là mặc định,
+ElevenLabs, ZeroTTS), ngôn ngữ và giọng, đặt tốc độ đọc.</li>
+<li>Cột <strong>3 · Hình ảnh</strong>: tick dùng ảnh, chọn số ảnh mỗi video, và chọn
+video nền.</li>
+<li>Cột <strong>4 · Logo và nhạc</strong>: chọn nhạc nền, tuỳ chọn thêm watermark (chỉ
+chữ và số, 3–25 ký tự).</li>
+<li>Bấm <strong>Tạo video ngắn</strong>. Muốn dừng thì bấm <strong>Dừng</strong>.</li>
+<li>Video hiện ra ngay khi xong, mỗi cái có nút tải riêng. Lấy cả lượt bằng <strong>Tải
+tất cả</strong>, hoặc đẩy sang Shopee/Facebook bằng hai nút cuối màn.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> <code>videos/</code>, và ghi ngay vào Thư viện video
+với loại "Video ngắn".</p>
+
+<p><strong>Cần gì trước:</strong> khoá AI (bắt buộc); <strong>kho Tư liệu có ít nhất
+một video nền và một nhạc nền</strong> — kho rỗng thì không chọn được gì.</p>
+
+<h3>4.2 Video tự động — nhóm <em>Tạo video</em></h3>
+
+<p>Màn này <strong>không tự dựng video</strong>: nó là bảng điều khiển cho bộ máy tạo
+video chạy riêng. Đây là nơi duy nhất trong app bắt đầu từ một <strong>ý tưởng</strong>
+chứ không từ file. Ba bước, chọn bằng ba nút.</p>
+
+<ol class="steps">
+<li><strong>1 · Kịch bản</strong>: nhập chủ đề rồi bấm <strong>Viết kịch bản bằng
+AI</strong>, hoặc dán kịch bản tay. Cũng có thể lấy kịch bản từ một video có sẵn bằng
+cách dán link hoặc chọn file rồi bấm <strong>Lấy kịch bản từ video</strong>.</li>
+<li><strong>2 · Cấu hình</strong>: nguồn hình (Pexels / Pixabay / Coverr / file trên
+máy), khung hình, độ dài mỗi cảnh, số video tạo cùng lúc (1–25), cài đặt âm thanh và
+phụ đề.</li>
+<li>Bấm <strong>Tạo video</strong> — nút này tự mở luôn bước 3 để thấy tiến trình.</li>
+<li><strong>3 · Kết quả</strong>: theo dõi phần trăm. <strong>Ngừng theo dõi</strong>
+chỉ ngừng <em>trang này</em> theo dõi — video vẫn dựng tiếp bên kia.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> <code>videos/mpt/&lt;task_id&gt;/</code>, ghi vào Thư
+viện với loại "Video tự động".</p>
+
+<p><strong>Cần gì trước:</strong> bộ máy tạo video đang chạy; khoá <strong>Pexels</strong>
+đã lưu ở Cấu hình; khoá AI cho phần viết kịch bản.</p>
+
+<h3>4.3 Lồng tiếng — nhóm <em>Từ video có sẵn</em></h3>
+
+<p>Giữ nguyên hình nguồn, thay tiếng bằng giọng tổng hợp ở ngôn ngữ đích, tuỳ chọn ghi
+phụ đề cháy lên hình và xoá logo. Một video nguồn × N ngôn ngữ = N video; trần
+<strong>40 job một lượt</strong>.</p>
+
+<ol class="steps">
+<li>Chọn nguồn: <strong>Link video</strong> (YouTube / TikTok / Douyin) hoặc <strong>File
+trong máy</strong>.</li>
+<li>Dán link (mỗi dòng một link) hoặc chọn nhiều file.</li>
+<li>Chọn engine đọc. Engine không chạy được thì bị gắn hậu tố <strong>"— không khả
+dụng"</strong> kèm lý do cụ thể.</li>
+<li>Chọn <strong>ngôn ngữ đích</strong> (chọn được nhiều) và giọng đọc.</li>
+<li>Đặt tốc độ đọc. Tuỳ chọn: ghi phụ đề, xoá logo (hiện thêm ô vùng cần tìm).</li>
+<li><strong>Chèn chữ &amp; logo</strong> (tuỳ chọn): chọn một template để chèn chữ lên
+video kết quả. Khung xem trước bên phải vẽ <strong>đúng template đang chọn</strong>, và
+đổi theo khi bạn gõ chữ trên/dưới. Để <strong>Không — giữ nguyên video</strong> thì
+không vẽ gì và không tốn thời gian.</li>
+<li>Bấm <strong>Dịch</strong>. Mỗi video có thẻ riêng với phần trăm và nút tải.</li>
+<li>Lấy cả lượt ở mục <strong>Lưu kết quả</strong>, hoặc đẩy sang Shopee/Facebook.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> <code>videos/</code>, ghi vào Thư viện với loại "Lồng
+tiếng".</p>
+
+<p><strong>Cần gì trước:</strong> khoá AI (bước dịch gọi mô hình); engine — EdgeTTS
+không cần gì, ElevenLabs cần khoá, ZeroTTS chỉ nói được tiếng Việt.</p>
+
+<div class="callout warn">
+<span class="tag">Chỗ dễ bỏ sót</span>
+<p><strong>Không có danh sách lượt cũ.</strong> Trang tự vẽ lại <strong>lượt gần
+nhất</strong> khi tải lại, nhưng không có danh sách các lượt cũ. Muốn giữ kết quả thì
+tải về, hoặc xem lại ở màn <strong>Thư viện video</strong>.</p>
+</div>
+
+<h3>4.4 Cắt highlight — nhóm <em>Từ video có sẵn</em></h3>
+
+<p>Tìm những đoạn hay nhất trong phim, podcast hoặc livestream dài rồi <strong>cắt và
+lồng tiếng</strong> chính các đoạn đó. Việc tìm là một <strong>phân tích chạy nền hàng
+chục phút</strong>, không gắn với tab — đóng tab hay tải lại trang nó vẫn chạy.</p>
+
+<ol class="steps">
+<li><strong>1 · Nguồn video</strong>: chọn <strong>Link video</strong> hoặc <strong>File
+trong máy</strong>. Với file, chọn từ thư mục <code>input/</code> — chép phim dài vào đó
+trên máy bạn, đừng tải lên (phim nặng hàng GB, tải lên sẽ copy thêm một bản nữa).</li>
+<li><strong>2 · Tuỳ chọn</strong>: số lượng highlight (1–12), số giây mỗi đoạn (10–90),
+khung hình (Dọc 9:16 / Ngang 16:9 / Nguyên bản), engine lồng tiếng, ngôn ngữ, giọng
+đọc, ghi phụ đề, và mục <strong>Chèn chữ &amp; logo</strong> — xem bước dưới.</li>
+<li><strong>Chèn chữ &amp; logo</strong> (tuỳ chọn): chọn một template để chèn chữ lên
+clip kết quả. Khung xem trước bên phải vẽ <strong>đúng template đang chọn</strong>, đổi
+theo khi bạn gõ chữ trên/dưới. Để <strong>Không — giữ nguyên video</strong> thì không vẽ
+gì.</li>
+<li>Muốn chỉnh gu thì mở accordion <strong>Nâng cao — thế nào là một highlight</strong>:
+sáu thanh trượt trọng số (độ to, mức thay đổi, nhịp cắt cảnh, mật độ nói, tốc độ nói,
+nhiều tín hiệu trùng).</li>
+<li>Bấm <strong>Tìm highlight</strong>. Ô tiến trình kể từng bước bằng tiếng Việt kèm
+thời gian đã chạy và ước lượng còn lại.</li>
+<li>Khi xong, khối <strong>Chọn những đoạn muốn giữ</strong> hiện ra: mỗi đoạn có ảnh
+xem trước, độ mạnh phần trăm, hộp tick <strong>Lấy</strong>, và thanh <strong>Vị trí
+cắt</strong>. Bỏ tick những đoạn không dùng.</li>
+<li>Bấm <strong>Tạo các đoạn đã chọn</strong> — cắt clip rồi nộp luôn vào hàng đợi để
+lồng tiếng.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> clip thô trong
+<code>videos/highlights/&lt;key&gt;/clips/</code>; clip đã lồng tiếng ra
+<code>videos/</code>. Cả hai ghi vào Thư viện với loại "Cắt highlight".</p>
+
+<p><strong>Cần gì trước:</strong> không cần nạp gì trước. <strong>Chỉ một phân tích
+cùng lúc</strong> — chạy cái thứ hai sẽ bị từ chối. Bước tìm highlight không cần khoá
+AI; chỉ bước dịch cần.</p>
+
+<div class="callout warn">
+<span class="tag">File cũ có thể biến mất</span>
+<p>Phân tích chỉ giữ <strong>10 lượt gần nhất</strong>. Clip cũ bị dọn đi là bình
+thường, và dòng trong Thư viện <strong>vẫn còn</strong> — nó ghi rõ "file không còn".
+Một dòng còn trên bảng không có nghĩa là file vẫn nằm đó.</p>
+</div>
+
+<h3>4.5 Xoá logo — nhóm <em>Từ video có sẵn</em></h3>
+
+<p>Xoá chữ <strong>đã cháy cứng vào hình</strong> — logo kênh, phụ đề ghi cứng, con số
+thời gian — bằng cách dò chữ rồi <strong>vẽ đè</strong>, không cắt cúp khung. Là màn
+riêng vì "chỉ xoá logo" là việc khác với "lồng tiếng rồi tiện thể xoá logo".</p>
+
+<ol class="steps">
+<li>Chọn nguồn: file trong <code>input/</code>, file tải lên, hoặc danh sách link.</li>
+<li>Tuỳ chọn: điền <strong>Vùng cần tìm</strong> nếu muốn. Ô này chỉ nhận <strong>sáu
+tên vùng</strong> (<code>top</code>, <code>bottom</code>, <code>top-left</code>,
+<code>top-right</code>, <code>bottom-left</code>, <code>bottom-right</code>) —
+<strong>không phải toạ độ</strong>. <strong>Để trống thì tự dò, kể cả watermark di
+chuyển</strong> (logo TikTok nhảy qua lại trong góc): hệ thống dò hai lượt — một lượt
+tìm chữ đứng yên, một lượt tìm dấu di động — rồi xoá cả hai. Ghi tên vùng khi bạn muốn
+tự chỉ chỗ, hoặc khi trong cùng góc đó có chữ khác mà bạn không muốn mất.</li>
+<li><strong>Chèn chữ &amp; logo</strong> (tuỳ chọn) hoạt động như ở hai màn kia: chọn
+một template thì khung xem trước bên phải vẽ đúng template đó, và đổi theo khi bạn gõ
+chữ.</li>
+<li>Bấm <strong>Xoá đi</strong>.</li>
+<li>Kết quả hiện ở khối <strong>Video đã xoá</strong>, kèm câu nhắc nên xem qua trước
+khi dùng.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> <code>videos/cleaned/&lt;tên&gt;_detext.mp4</code>.
+<strong>Màn này không ghi vào Thư viện video</strong> — đường ra duy nhất là xem và tải
+ngay trên màn này, hoặc hai nút bàn giao.</p>
+
+<p><strong>Cần gì trước:</strong> chạy trên CPU, model tải về lần dùng đầu. <strong>Mỗi
+lúc chỉ một job.</strong></p>
+
+<div class="callout warn">
+<span class="tag">Lỗi ở màn này là tiếng Anh</span>
+<p>Câu người dùng Việt gặp nhiều nhất — <em>"No logo or caption was found in this
+video…"</em> — hiện <strong>nguyên văn tiếng Anh</strong>, và nó còn trỏ tới ô tên tiếng
+Anh "Where to look", trong khi giao diện tiếng Việt gọi ô đó là <strong>Vùng cần
+tìm</strong>. Cùng một ô, hai tên.</p>
+</div>
+
+<h3>4.6 Link sản phẩm — nhóm <em>Bán hàng</em></h3>
+
+<p>Không tạo video. Nó đọc link sản phẩm Shopee thành một bảng (tiêu đề, giá, số
+ảnh/video), và biến ảnh của sản phẩm thành thứ tải về được. Nguyên tắc: không bịa —
+Shopee chặn thì hiện đúng cái Shopee trả về.</p>
+
+<ol class="steps">
+<li><strong>Đăng nhập Shopee trước</strong> — đọc trang sản phẩm mà chưa có phiên sẽ bị
+trả về trang kiểm tra.</li>
+<li>Dán link vào ô <strong>Link sản phẩm</strong>, mỗi dòng một link, tối đa
+<strong>20</strong> link một lần.</li>
+<li>Bấm <strong>Đọc</strong>. Mỗi dòng có câu trả lời riêng; dòng lỗi không làm hỏng
+dòng khác.</li>
+<li>Chọn sản phẩm ở dropdown, tick ảnh dùng để dựng video, rồi <strong>Tải ảnh
+về</strong>.</li>
+<li>Bấm <strong>Tạo video từ sản phẩm này</strong> — nó gửi sang bộ máy tạo video và
+chạy ở hàng đợi riêng.</li>
+</ol>
+
+<p><strong>Cần gì trước:</strong> phiên Shopee (hai nút đăng nhập chỉ chạy khi app chạy
+<strong>native</strong>, không chạy trong container); bộ máy tạo video đang chạy.</p>
+
+<p>Tiến độ của video vừa gửi xem ở màn <strong>Video tự động</strong>.</p>
+
+<h3>4.7 Shopee — nhóm <em>Bán hàng</em></h3>
+
+<p><strong>Đăng thật</strong> lên Shopee Video bằng cách điều khiển <strong>một điện
+thoại Android thật qua ADB</strong>, lần lượt từng video, có gắn link sản phẩm nếu có.
+Đây là màn duy nhất cần phần cứng.</p>
+
+<ol class="steps">
+<li>Mục <strong>Điện thoại</strong>: chọn thiết bị (bấm <strong>Dò lại</strong> nếu danh
+sách rỗng), đặt <strong>giây giữa hai lần đăng</strong>.</li>
+<li>Mục <strong>Đăng những gì</strong>: chọn <strong>Nhiều video, một link</strong> hoặc
+<strong>Mỗi video một link</strong>.</li>
+<li>Dán link sản phẩm và chú thích cho cả loạt (có nút chép xuống mọi dòng), hoặc để AI
+viết bằng <strong>Viết chú thích bằng AI</strong>.</li>
+<li>Thêm video: <strong>Chọn video từ máy tính</strong>, hoặc <strong>Lấy từ thư viện
+video</strong>, hoặc nhận từ nút bàn giao của 5 màn khác.</li>
+<li>Bảng có 4 cột: <strong>Xoá / Đường dẫn video / Chú thích / Link sản phẩm</strong>.
+Cột "Xoá" là <strong>chip bấm một lần</strong> để tick, và <strong>dòng bị tick sẽ
+không được đăng</strong>.</li>
+<li>Bấm <strong>Bắt đầu đăng hàng loạt</strong>. <strong>Dừng</strong> để dừng sau video
+đang chạy; <strong>Chạy lại phần lỗi</strong> chỉ chạy lại những cái hỏng.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> bài đăng nằm trên điện thoại. Bằng chứng trên máy ở
+<code>logs/shopee/&lt;batch&gt;/&lt;nn_video&gt;/</code> gồm <code>log.txt</code> (tiếng
+Việt, có mốc thời gian), <code>error.png</code>, <code>ui.xml</code>,
+<code>result.json</code>.</p>
+
+<p><strong>Cần gì trước:</strong> điện thoại bật USB debugging và <code>adb devices</code>
+thấy máy; app Shopee đã cài và <strong>đã đăng nhập</strong>; bảng selector của app
+Shopee đã điền.</p>
+
+<div class="callout trap">
+<span class="tag">Chính sách, không chỉ nhịp độ</span>
+<p>Shopee tính <em>"nội dung đăng số lượng lớn trong cùng một ngày"</em> là spam:
+<strong>12 điểm phạt → khoá đăng 30 ngày</strong>, 15 điểm → khoá vĩnh viễn. Khoảng
+nghỉ giữa các bài là <strong>kiểm soát chính sách</strong>. Đừng đặt nhỏ.</p>
+</div>
+
+<div class="callout warn">
+<span class="tag">Ba chỗ dễ mất thời gian</span>
+<ul>
+<li><strong>Video phải tối thiểu 576p.</strong> Shopee từ chối video thấp hơn bằng một
+<em>toast</em> — không nằm trong cây accessibility, không selector nào bắt được. Triệu
+chứng duy nhất là nút "Tiếp theo" ở màn xem trước <strong>đứng im như nút hỏng</strong>.
+Đây là thứ khó chẩn đoán nhất của cả hệ thống.</li>
+<li><strong>Selector được hiệu chỉnh cho một máy cụ thể</strong> (Galaxy A13, Shopee
+3.82.59, tiếng Việt). Máy để Shopee ngôn ngữ khác sẽ hỏng lặng lẽ.</li>
+<li><strong>Bảng trạng thái không nói khi video lên mà thiếu link affiliate.</strong>
+Shopee từ chối đọc link thì video vẫn đăng, chỉ là không gắn gì — dấu vết duy nhất nằm
+trong <code>result.json</code>.</li>
+</ul>
+</div>
+
+<p>Gặp màn đăng nhập, OTP hoặc xác minh thì job chuyển sang
+<code>MANUAL_ACTION_REQUIRED</code> và <strong>cả batch dừng lại</strong>.</p>
+
+<h3>4.8 Facebook — nhóm <em>Bán hàng</em></h3>
+
+<p>Đăng video lên <strong>Facebook Page qua Graph API</strong> — không mở trình duyệt,
+không nhập mật khẩu, không cần điện thoại.</p>
+
+<ol class="steps">
+<li>Mục <strong>Tài khoản Facebook</strong>: bấm <strong>Connect Facebook</strong> → mở
+link đồng ý → cấp quyền → quay lại. <strong>Kiểm tra kết nối</strong> để đọc lại tài
+khoản và danh sách Page.</li>
+<li>Nếu đăng nhập không tự quay về: mở accordion <strong>Nếu đăng nhập không tự quay
+về</strong>, dán nguyên địa chỉ trên thanh địa chỉ vào ô rồi bấm <strong>Hoàn tất kết
+nối</strong>.</li>
+<li>Mục <strong>Các Page</strong>: tick <strong>Đăng lên những Page này</strong>. Page
+không có quyền tạo nội dung bị bỏ khỏi danh sách, có dòng đếm.</li>
+<li>Mục <strong>Các video</strong>: dán chú thích cho mọi dòng (hoặc để AI viết), thêm
+video từ máy hoặc từ thư viện.</li>
+<li>Mục <strong>Chạy</strong>: chọn <strong>Đăng dưới dạng</strong> (Tự chọn theo từng
+video / Luôn là Reel / Luôn là video thường), bấm <strong>Bắt đầu đăng</strong>.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> bài trên Page. Bằng chứng ở
+<code>logs/social/facebook/&lt;batch&gt;/&lt;nn_video&gt;/</code>.</p>
+
+<p><strong>Cần gì trước:</strong> App ID và App Secret dán ở màn Cấu hình, Redirect URI
+đã khai trong dashboard Meta, và ba quyền ở <a href="#fb">mục 3.4</a>.</p>
+
+<div class="callout warn">
+<span class="tag">Giới hạn của Facebook</span>
+<p>Bảng chỉ có 3 cột <strong>Xoá / Đường dẫn video / Chú thích</strong> — <strong>không
+có cột Page</strong>, vì Page chọn một lần cho cả lô. <strong>Không có ô chỉnh thời gian
+chờ giữa các bài</strong> — mặc định 30 giây và không đổi được từ giao diện. Facebook
+cho <strong>30 Reel mỗi Page trong 24 giờ</strong>; vượt thì có cảnh báo nhưng
+<strong>không chặn</strong>.</p>
+</div>
+
+<h3>4.9 Link từ kênh — nhóm <em>Kho của bạn</em></h3>
+
+<p>Không tạo video, không tải gì: nó <strong>liệt kê link video công khai của một
+kênh</strong> YouTube hoặc TikTok thành một danh sách sửa được.</p>
+
+<ol class="steps">
+<li>Dán <strong>Link kênh</strong>.</li>
+<li>Đặt <strong>số video tối đa</strong> (1–200, mặc định 20) và tuỳ chọn <strong>Lấy cả
+Shorts</strong> (chỉ YouTube).</li>
+<li>Bấm <strong>Lấy danh sách video</strong>.</li>
+<li>Danh sách đổ vào ô text — <strong>sửa hoặc xoá tuỳ ý</strong> trước khi dùng.</li>
+<li><strong>Lưu danh sách thành file</strong>, hoặc bấm <strong>Gửi sang tab Lồng
+tiếng</strong>.</li>
+</ol>
+
+<p><strong>Cần gì trước:</strong> mạng. Không cần khoá AI.</p>
+
+<div class="callout warn">
+<span class="tag">Nút gửi sang Lồng tiếng làm gì</span>
+<p>Nó ghi đè ô link của màn Lồng tiếng bằng danh sách này và mở màn đó. Nó
+<strong>không</strong> đặt ngôn ngữ, <strong>không</strong> chọn giọng, <strong>không</strong>
+bấm Dịch — bạn vẫn phải tự chọn ngôn ngữ đích rồi bấm. Và nó <strong>không có kiểm
+tra</strong>: bấm khi ô rỗng vẫn mở màn Lồng tiếng với ô link rỗng.</p>
+</div>
+
+<h3>4.10 Tư liệu — nhóm <em>Kho của bạn</em></h3>
+
+<p>Đây là <strong>kho nguyên liệu</strong> cho các màn làm video: video nền, nhạc nền,
+ảnh. Các ô "Chọn video nền" và "Chọn nhạc nền" ở màn Video ngắn đọc trực tiếp từ kho này
+— <strong>kho rỗng thì không màn nào chạy được</strong>.</p>
+
+<ol class="steps">
+<li>Mở accordion <strong>Thêm tư liệu từ máy bạn hoặc từ YouTube</strong>.</li>
+<li>Chọn <strong>Thêm từ</strong>: từ YouTube (điền tên, loại, URL) hoặc từ máy (điền
+tên, chọn loại, tải file lên).</li>
+<li>Bấm <strong>THÊM</strong>.</li>
+<li>Xem danh sách ở bảng bên trái; bấm một dòng để xem trước; lọc bằng radio
+<strong>Loại</strong>.</li>
+<li><strong>Tải các file về</strong> để lấy các file có thật trên máy — mục chỉ có link
+YouTube bị bỏ qua, không báo lỗi.</li>
+</ol>
+
+<p><strong>Kết quả ở đâu:</strong> file tải lên được chuyển vào <code>public/</code> và
+ghi vào cơ sở dữ liệu tư liệu; mục YouTube chỉ là một dòng link. Tên chỉ được chứa chữ,
+số, khoảng trắng, <code>_</code> và <code>-</code>; trùng tên bị từ chối.</p>
+
+<h3>4.11 Thư viện video — nhóm <em>Kho của bạn</em></h3>
+
+<p>Không tạo gì. Đây là <strong>sổ ghi những video đã làm xong, từ cả bốn màn</strong> —
+thứ duy nhất trong app trả lời "tôi đã làm gì, file ở đâu".</p>
+
+<ol class="steps">
+<li>Gõ vào ô <strong>Tìm kiếm</strong> — tìm ngay khi Enter.</li>
+<li>Lọc bằng <strong>Loại video</strong> và <strong>Sắp xếp</strong> — đổi là bảng đổi
+ngay.</li>
+<li>Đọc bảng: <strong>Loại video / Tên file / Thư mục / Ngày tạo</strong>.</li>
+<li>Chọn một video ở dropdown rồi bấm <strong>Xem trước</strong> để xem ngay trong
+màn.</li>
+<li><strong>Tải tất cả</strong> để lấy zip của <em>những dòng đang hiện</em> và <em>còn
+file trên đĩa</em>.</li>
+</ol>
+
+<p>Cột <strong>Thư mục</strong> là thư mục trên máy bạn, không phải chỗ đã "lưu" — việc
+tải về là do trình duyệt quyết định. Dòng có file đã bị dọn <strong>vẫn nằm lại</strong>
+và ghi rõ "file không còn". Chỉ vẽ tối đa <strong>200</strong> dòng; quá thì phải
+lọc.</p>
+
+<h3>4.12 Cấu hình — nhóm <em>Ứng dụng</em></h3>
+
+<p>Nơi duy nhất để dán khoá. Chi tiết đầy đủ ở <a href="#khoa">mục 3</a>.</p>
+
+<h3>Dùng chung ở nhiều màn</h3>
+
+<ul>
+<li><strong>Hàng tải cuối màn</strong> — nút <strong>Tải tất cả</strong> (chỉ bật khi có
+kết quả) và <strong>Xoá kết quả trên màn hình</strong> (ẩn ở màn Thư viện). Nhãn đổi
+theo màn: "Lưu danh sách thành file", "Tải ảnh về", "Tải các file về".</li>
+<li><strong>Thẻ video</strong> — di chuột là <strong>phát im lặng</strong> để xem trước;
+bấm vào mở trình phát nổi (Esc để đóng); mỗi thẻ có nút tải riêng không cần mở trình
+phát.</li>
+<li><strong>Nút bàn giao</strong> <em>Đưa sang Shopee</em> / <em>Đưa sang Facebook</em>
+có mặt trên <strong>5 màn</strong>. Bấm là ghi thẳng vào bảng của màn nhận và mở màn
+đó.</li>
+</ul>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="quy-trinh">
+<h2><span class="n">5</span>Quy trình mẫu</h2>
+
+<h3>A. Từ một chủ đề ra video ngắn</h3>
+<ol class="steps">
+<li><strong>Tư liệu</strong> → thêm ít nhất một <strong>video nền</strong> và một
+<strong>nhạc nền</strong>. Không có thì màn Video ngắn không chạy được.</li>
+<li><strong>Cấu hình</strong> → dán khoá DeepSeek, bấm <em>Kiểm tra kết nối</em>, lưu.</li>
+<li><strong>Video ngắn</strong> → chọn số video, kiểu video và chủ đề.</li>
+<li>Chọn giọng đọc và tốc độ.</li>
+<li>Chọn video nền, nhạc nền, số ảnh mỗi video.</li>
+<li>Bấm <strong>Tạo video ngắn</strong>. Theo dõi ở bảng 🔀 nếu muốn.</li>
+<li>Tải về, hoặc bấm <em>Đưa sang Shopee</em> / <em>Đưa sang Facebook</em>.</li>
+</ol>
+
+<h3>B. Từ một video dài ra nhiều clip ngắn</h3>
+<ol class="steps">
+<li>Chép phim dài vào thư mục <code>input/</code> trên máy bạn (đừng tải lên — phim nặng
+hàng GB).</li>
+<li><strong>Cắt highlight</strong> → nguồn <em>File trong máy</em> → chọn phim → bấm
+<em>Làm mới</em> nếu chưa thấy.</li>
+<li>Đặt số lượng highlight và số giây mỗi đoạn. Chọn khung hình <strong>Dọc 9:16</strong>
+nếu đăng mạng xã hội.</li>
+<li>Bấm <strong>Tìm highlight</strong>, rồi chờ. Phim càng dài càng lâu — đây là bước
+lâu nhất.</li>
+<li>Xem từng đoạn, <strong>bỏ tick</strong> những đoạn không dùng, chỉnh <em>Vị trí
+cắt</em> nếu chủ thể bị lệch khỏi khung dọc.</li>
+<li>Bấm <strong>Tạo các đoạn đã chọn</strong> để cắt và lồng tiếng.</li>
+<li>Tải về, hoặc đưa sang Shopee/Facebook.</li>
+</ol>
+
+<h3>C. Lồng tiếng một video nước ngoài</h3>
+<ol class="steps">
+<li><strong>Cấu hình</strong> → có khoá AI.</li>
+<li><strong>Lồng tiếng</strong> → nguồn <em>Link video</em>, dán link (mỗi dòng một
+link), hoặc chọn file.</li>
+<li>Chọn engine đọc. Muốn tiếng không rời khỏi máy thì chọn <strong>ZeroTTS</strong>
+(chỉ tiếng Việt, không cần khoá).</li>
+<li>Chọn ngôn ngữ đích trong panel của engine, chọn giọng, đặt tốc độ đọc.</li>
+<li>Tick <em>Ghi phụ đề lên video</em> nếu muốn phụ đề cháy cứng.</li>
+<li>Bấm <strong>Dịch</strong>.</li>
+</ol>
+
+<h3>D. Đăng lên Shopee</h3>
+<ol class="steps">
+<li>Cắm điện thoại, bật USB debugging, mở app Shopee và <strong>đăng nhập</strong>.</li>
+<li>Chuẩn bị video <strong>tối thiểu 576p</strong> — thấp hơn thì Shopee từ chối lặng
+lẽ.</li>
+<li>Lấy link sản phẩm: trong app Shopee mở <strong>đúng trang sản phẩm</strong> → Chia
+sẻ → Sao chép liên kết. Link <strong>danh mục</strong> không dùng được — hệ thống chặn
+và nói rõ lý do.</li>
+<li><strong>Shopee</strong> → chọn thiết bị, dán link và chú thích, thêm video.</li>
+<li>Đặt <strong>giây giữa hai lần đăng</strong> — đừng để nhỏ.</li>
+<li>Bấm <strong>Bắt đầu đăng hàng loạt</strong>, rồi theo dõi ở bảng Tiến độ.</li>
+</ol>
+
+<h3>E. Giao việc bằng câu lệnh</h3>
+<ol class="steps">
+<li>Bấm <strong>🤖</strong> ở thanh ray.</li>
+<li>Gõ việc bằng câu của bạn — ví dụ "dịch video này sang tiếng Việt", hoặc bấm một
+chip ví dụ để điền sẵn.</li>
+<li>Enter để gửi. Trợ lý gọi công cụ thật và vẽ từng bước trong khung chat.</li>
+<li>Việc nó khởi động hiện luôn trên bảng <strong>🔀</strong>.</li>
+</ol>
+
+<p>Muốn kiểm chứng trợ lý nói thật hay không: mở
+<code>logs/agent/&lt;giờ&gt;.jsonl</code>. Lượt gọi công cụ thật có
+<code>"kind": "call"</code>; chỉ có <code>"kind": "say"</code> nghĩa là nó tự viết ra.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="su-co">
+<h2><span class="n">6</span>Khi có trục trặc</h2>
+
+<h3>Khoá dán vào rồi mà không ăn</h3>
+<p>Chín trên mười lần là do <strong>một giá trị cũ nằm trong <code>.env</code></strong>.
+Với mọi khoá trừ Facebook, ô nhập ở màn Cấu hình mới là cái thắng — nên nếu nó vẫn không
+ăn, thì ngược lại: có thể bạn đang sửa <code>.env</code> mà quên
+<code>docker compose up -d</code> để container nhận lại. Xem bảng ở
+<a href="#hai-noi">mục 3.8</a>.</p>
+<p>Với <strong>Facebook thì luôn kiểm tra <code>.env</code> trước</strong> — ở đó
+<code>.env</code> thắng, ngược với mọi khoá khác.</p>
+
+<h3>Video bị thiếu cảnh</h3>
+<p>Thiếu <strong>khoá Pexels</strong>. Không có khoá thì tính năng không báo lỗi — nó
+chỉ trả về video không có cảnh quay. Dán khoá vào màn Cấu hình và <strong>Lưu</strong>,
+rồi nhìn dòng trạng thái bên dưới để chắc khoá đã được gửi sang.</p>
+
+<h3>Facebook: kết nối được, vài ngày sau mới báo thiếu quyền</h3>
+<p>Đúng cái bẫy ở <a href="#fb">mục 3.4</a>. App chưa bật quyền trong use case, nên
+Meta đã âm thầm bỏ nó ra khỏi lúc xin quyền. Vào <strong>Use cases → Customize →
+Permissions and features</strong>, bấm <strong>Add</strong> cho từng quyền tới khi
+<code>Ready for testing</code>, rồi <strong>Connect Facebook lại</strong>.</p>
+<p>Câu báo lỗi trong app có ghi sẵn đúng các bước này.</p>
+
+<h3>Facebook: Connect báo lỗi redirect</h3>
+<p>Redirect URI trong <strong>Facebook Login → Settings</strong> phải khớp <strong>từng
+ký tự</strong> với:</p>
+<pre><code>http://localhost:31415/facebook/callback</code></pre>
+<p>Sai <strong>số port</strong> cũng bị từ chối, và câu báo lỗi đọc như thể sai đường
+dẫn. Nếu bạn đổi port app thì phải sửa cả hai nơi.</p>
+<p>Nếu Meta vẫn từ chối <code>http://localhost</code>, dùng đường dự phòng: dán code thủ
+công.</p>
+
+<h3><code>AutoReel Engine: không kết nối được</code></h3>
+<p>Bộ máy tạo video chưa chạy. Kiểm bằng:</p>
+<pre><code>docker compose ps</code></pre>
+<p>Nó là <strong>hai service riêng</strong> trong cùng file compose, không phải container
+phụ của app chính.</p>
+
+<h3>Container không chịu khởi động, báo <code>could not select device driver</code></h3>
+<p>Bạn đang chạy <strong>file compose có khai GPU</strong> trên một máy chưa có NVIDIA
+Container Toolkit. Docker dừng ngay lúc tạo container và <strong>không cảnh báo
+trước</strong>.</p>
+<p>Đây là lý do file <code>docker-compose.yml</code> gốc <strong>cố ý không khai
+GPU</strong> — máy không có card vẫn phải chạy được. Muốn dùng GPU thì dùng riêng
+<code>docker-compose.nvidia.yml</code>, và khi đó máy phải có driver NVIDIA đủ mới.</p>
+
+<h3>Đang chạy job mà khởi động lại container</h3>
+<p><strong>Job chạy bên trong tiến trình của app</strong>, không phải trong trình duyệt.
+Nghĩa là:</p>
+<ul>
+<li><strong>Đóng tab thì job vẫn chạy.</strong> Không sao cả.</li>
+<li><strong>Restart container thì job đang chạy bị huỷ.</strong> Hàng đợi bị đóng và các
+job chờ bị bỏ.</li>
+</ul>
+<p>Nên: chạy xong rồi hãy <code>docker compose restart</code>, và đừng restart giữa một
+lượt dịch nhiều video.</p>
+
+<h3>Đĩa đầy</h3>
+<p>Biểu hiện <strong>không phải</strong> một câu "hết chỗ" — nó là <strong>lỗi
+render</strong>. Nếu mọi thứ đang chạy tốt rồi tự nhiên render hỏng, kiểm tra đĩa trước
+khi nghi ngờ gì khác:</p>
+<pre><code>docker system df
+docker builder prune     # cache build, xoá được, vài GB</code></pre>
+<p>Chỗ tốn nhất thường là thư mục chứa video sinh ra — video đã dựng xong và không dùng
+nữa thì xoá được.</p>
+</section>
+
+<footer>
+<p>AutoReel — <code>gui/branding.py</code>. Bản Markdown của tài liệu này nằm ở
+<code>HUONG-DAN-SU-DUNG.md</code>; phần cài đặt và kiến trúc ở <code>README.md</code>.</p>
+</footer>
+
+</main>
+</div>
+</div>
+</body>
+</html>
