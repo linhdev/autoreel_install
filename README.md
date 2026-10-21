@@ -169,9 +169,11 @@ Máy nào đã có thứ khác chiếm cổng 31415 thì điền `SHORTGPT_PORT=
 Bạn được cấp một mã dạng `AR-XXXX-XXXX-XXXX-XXXX` khi mua phần mềm. Nhập nó một
 lần:
 
-1. Mở app → **Cấu hình** (mục cuối sidebar)
-2. Kéo xuống cuối màn hình, tới mục **Bản quyền**
-3. Dán mã vào ô **Mã kích hoạt** → bấm **Kích hoạt**
+1. Mở app — màn hình **Kích hoạt phần mềm** hiện ra trước tiên.
+2. Dán mã vào ô **Mã kích hoạt** → bấm **Kích hoạt**.
+
+Nếu app đã vào được bên trong (máy đã kích hoạt trước đó), đổi mã ở
+**Cấu hình** → mục **Bản quyền**.
 
 Xong. Mã được lưu trong `./data/database`, nên cập nhật hay khởi động lại đều
 không phải nhập lại.
@@ -179,11 +181,12 @@ không phải nhập lại.
 **Mã này gắn với máy.** Cài lại Windows hay đổi máy thì cần mã mới — liên hệ nơi
 bán, họ gỡ máy cũ khỏi hệ thống rồi cấp lại.
 
-#### Sau khi kích hoạt, phần mềm tự bắt buộc bản quyền
+#### Phần mềm bắt buộc kích hoạt
 
-Đây là điều đáng biết trước: **từ lúc kích hoạt, app sẽ từ chối làm việc nếu
-bản quyền hết hạn hoặc bị thu hồi.** Trước khi kích hoạt thì không — nên nếu bạn
-chưa có mã, app vẫn chạy bình thường và bạn cứ dùng thử trước.
+**App yêu cầu mã trước khi làm việc.** Nếu chưa nhập mã, bạn vẫn cài được, nhưng
+lần mở đầu tiên sẽ đứng ở màn hình kích hoạt cho tới khi nhập đúng mã.
+
+Sau khi kích hoạt, app sẽ từ chối làm việc nếu bản quyền hết hạn hoặc bị thu hồi.
 
 Khi bản quyền sắp hết hạn, mục **Bản quyền** trong Cấu hình sẽ hiện cảnh báo.
 Gia hạn rồi bấm **Kiểm tra ngay** là xong, không cần cài lại gì.

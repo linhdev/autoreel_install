@@ -73,10 +73,9 @@ services:
       - SHORTGPT_TT_COOKIES=${SHORTGPT_TT_COOKIES:-}
       - SHORTGPT_PROXY=${SHORTGPT_PROXY:-}
       # --- Bản quyền ---------------------------------------------------------
-      # Công tắc bắt buộc kích hoạt. Mặc định TẮT: một bản cài đã bán trước khi
-      # có hệ thống bản quyền không có mã nào, và bật cái này lên mà chưa gửi mã
-      # cho họ là dừng toàn bộ khách hàng cùng lúc, vào một ngày họ không đổi gì.
-      # Bật bằng cách đặt SHORTGPT_LICENSE_ENFORCE=1 trong .env.
+      # Công tắc bắt buộc kích hoạt. MẶC ĐỊNH BẬT, kể cả khi biến để trống:
+      # app yêu cầu mã ở lần mở đầu tiên. Đặt =0 chỉ trên máy phát triển hoặc
+      # phiên hỗ trợ; đừng đặt 0 trên máy khách.
       - SHORTGPT_LICENSE_ENFORCE=${SHORTGPT_LICENSE_ENFORCE:-}
       # Máy chủ bản quyền. Điền cho tường minh dù đã có mặc định trong code:
       # đây là dòng người ta tìm khi cần trỏ sang máy chủ thử nghiệm.
