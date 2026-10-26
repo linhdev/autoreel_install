@@ -742,7 +742,11 @@ Cùng những luồng đó, gõ từ điện thoại. Bật một lần:
 2. Nhắn **@userinfobot** để lấy **id số** của bạn.
 3. Mở app → màn **Cấu hình** → khối **Bot Telegram** → dán cả hai → **Lưu**.
 4. Dựng container của bot **một lần**:
-   `docker compose --profile telegram up -d --build`
+   `docker compose --profile telegram up -d`
+
+   Máy đã cài AutoReel từ bản trước: service này mới được thêm vào
+   `docker-compose.yml` ở bản hiện tại. Chạy **AutoReel-Setup bản mới một lần**
+   (tự cập nhật chỉ thay image, không thay file compose), rồi mới bật bot.
 
 Rồi nhắn `/start` cho bot. Câu lệnh: `/menu`, `/help`, `/reup`, `/review`,
 `/affiliate`, `/jobs`, `/status [mã]`, `/pages`, `/cancel`.
@@ -767,7 +771,7 @@ nó không in địa chỉ nội bộ, vì địa chỉ đó không nói đượ
 **Ba điều nên biết:**
 
 - Bot **chỉ trả lời những id trong danh sách trắng**. Danh sách rỗng thì nó
-  từ chối chạy và in lý do ra `docker logs shortgpt-telegram`.
+  từ chối chạy và in lý do ra `docker logs autoreel-telegram`.
 - **Một lệnh đang chạy mà app tắt thì thành `failed` và không chạy lại** — chạy
   lại có thể đăng hai lần.
 - `/affiliate`, `/reup`, `/review` có thể **đăng thật**. Phần tóm tắt trước khi

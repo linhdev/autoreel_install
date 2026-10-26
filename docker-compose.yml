@@ -157,3 +157,26 @@ services:
       - ./data/mpt-data/storage:/MoneyPrinterTurbo/storage
       - ./data/models/hf-cache:/root/.cache/huggingface
     restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Bot Telegram (tuỳ chọn). Nằm sau một profile vì một máy chưa cấu hình token
+  # không được chạy container này: bot sẽ thoát ngay và `restart` biến nó thành
+  # một vòng lặp. Token và danh sách trắng đọc từ database dùng chung, không
+  # nằm trong file này; image do bộ cài ghim cùng version với app.
+  #
+  #   docker compose --profile telegram up -d
+  # ---------------------------------------------------------------------------
+  telegram:
+    image: ${TELEGRAM_IMAGE:-ghcr.io/linhdev/autoreel-telegram:latest}
+    container_name: autoreel-telegram
+    profiles: ["telegram"]
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      # Hai container mở cùng một database. Bot chỉ đọc/ghi các bảng
+      # telegram_*; app là bên duy nhất chạy job.
+      - ./data/database:/app/.database
+      # File gửi qua chat rơi vào đây; app đọc thư mục này ở chế độ read-only.
+      - ./data/input:/app/input
+    restart: unless-stopped
